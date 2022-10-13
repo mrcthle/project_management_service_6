@@ -1,8 +1,8 @@
 package de.szut.lf8_project.controllers;
 
 import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
-import de.szut.lf8_project.dtos.helloDtos.HelloCreateDto;
-import de.szut.lf8_project.dtos.helloDtos.HelloGetDto;
+import de.szut.lf8_project.dtos.helloDto.HelloCreateDto;
+import de.szut.lf8_project.dtos.helloDto.HelloGetDto;
 import de.szut.lf8_project.entities.HelloEntity;
 import de.szut.lf8_project.mappers.HelloMapper;
 import de.szut.lf8_project.services.HelloService;

@@ -1,10 +1,9 @@
 package de.szut.lf8_project.repositories;
 
 
+import de.szut.lf8_project.entities.HelloEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface HelloRepository extends JpaRepository<HelloEntity, Long> {
