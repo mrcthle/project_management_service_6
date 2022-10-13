@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello;
+package de.szut.lf8_project.mappers;
 
 import de.szut.lf8_project.hello.dto.HelloCreateDto;
 import de.szut.lf8_project.hello.dto.HelloGetDto;
