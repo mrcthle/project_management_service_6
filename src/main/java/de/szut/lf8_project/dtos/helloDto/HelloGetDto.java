@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello.dto;
+package de.szut.lf8_project.dtos.helloDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
