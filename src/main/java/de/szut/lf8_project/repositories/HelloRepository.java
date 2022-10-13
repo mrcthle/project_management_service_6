@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello;
+package de.szut.lf8_project.repositories;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
