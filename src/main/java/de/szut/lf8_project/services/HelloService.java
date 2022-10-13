@@ -1,4 +1,4 @@
-package de.szut.lf8_project.hello;
+package de.szut.lf8_project.services;
 
 import org.springframework.stereotype.Service;
 
