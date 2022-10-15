@@ -1,19 +1,17 @@
 package de.szut.lf8_project.dtos.employeeDto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class EmployeeDTO {
     
-    private Long employeeId;
+    private Long id;
     
-    private String name;
+    private String lastName;
     
-    private List<String> qualifications;
+    private String firstName;
+    
+    private List<String> skillSet;
 }
