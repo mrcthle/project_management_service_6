@@ -45,7 +45,7 @@ public class EmployeeService {
         return response.getBody() == null ? null : List.of(response.getBody());
     }
     
-    private String getJwtToken() {
+    private String getJwtToken() { //Todo: wann neuen Token abfragen (abgelaufen)
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -63,7 +63,6 @@ public class EmployeeService {
         String response = restTemplate.postForEntity(postUrl, entity, String.class).getBody();
         assert response != null;
         String token = getJwtTokenFromResponse(response);
-        System.out.println(token);
         return token;
     }
     
