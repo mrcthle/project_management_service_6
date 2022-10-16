@@ -15,9 +15,18 @@ public class EmployeeService {
     private final String url = "https://employee.szut.dev/employees";
     private final String jwtToken;
 
-    public EmployeeService() {
+    private static EmployeeService instance;   
+    
+    private EmployeeService() {
         restTemplate = new RestTemplate();
         jwtToken = getJwtToken();
+    }
+    
+    public static EmployeeService getInstance() {
+        if (instance == null) {
+            instance = new EmployeeService();
+        }
+        return instance;
     }
 
     public EmployeeDTO getEmployee(final Long id) {
