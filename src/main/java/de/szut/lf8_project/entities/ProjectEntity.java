@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Entity
@@ -32,4 +33,12 @@ public class ProjectEntity {
     
     @Column(name = "end_date")
     private LocalDateTime endDate;
+    
+    @Column(name = "project_employees")
+    @OneToMany(
+            mappedBy = "projectEntity",
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
+    private Set<EmployeeProjectEntity> projectEmployees;
 }
