@@ -1,6 +1,7 @@
 package de.szut.lf8_project.services;
 
 import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
+import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -35,7 +36,11 @@ public class EmployeeService {
         httpsHeaders.set("Authorization", "Bearer " + jwtToken);
         ResponseEntity<EmployeeDTO> response =
                 restTemplate.exchange(url + "/" + id, HttpMethod.GET, new HttpEntity<String>(httpsHeaders), EmployeeDTO.class);
-        return response.getBody();
+        EmployeeDTO employeeDTO = response.getBody();
+        if (employeeDTO == null) {
+            throw new ResourceNotFoundException("Employee with id = " + id + " not found.");
+        }
+        return employeeDTO;
     }
     
     public List<EmployeeDTO> getEmployees() {
