@@ -35,6 +35,9 @@ public class ProjectEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
     
+    @Column(name = "project_leader")
+    private Long projectLeader;
+    
     @Column(name = "project_employees")
     @OneToMany(
             mappedBy = "projectEntity",
