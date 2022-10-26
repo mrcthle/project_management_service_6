@@ -1,9 +1,11 @@
 package de.szut.lf8_project.services;
 
 import de.szut.lf8_project.dtos.customerDto.CustomerDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CustomerService {
     
     private final static CustomerDTO[] customerList = new CustomerDTO[]{
