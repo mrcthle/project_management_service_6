@@ -24,9 +24,6 @@ public class ProjectEntity {
     @Column(name = "customer_Id")
     private Long customerId;
     
-    @Column(name = "contact_customer_side")
-    private String contactCustomerSide;
-    
     private String comment;
     
     @Column(name = "start_date")
