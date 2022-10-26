@@ -2,13 +2,14 @@ package de.szut.lf8_project.services;
 
 import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import org.springframework.http.*;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-
+@Service
 public class EmployeeService {
 
     private final RestTemplate restTemplate;
