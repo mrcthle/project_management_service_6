@@ -33,7 +33,15 @@ public class ProjectMapper {
         projectEntity.setStartDate(addProjectDTO.getStartDate());
         projectEntity.setPlannedEndDate(addProjectDTO.getPlannedEndDate());
         projectEntity.setEndDate(addProjectDTO.getEndDate());
-        projectEntity.setProjectEmployees(addProjectDTO.getProjectEmployees());
+        projectEntity.setProjectLeader(addProjectDTO.getProjectLeader());
+        Set<EmployeeProjectEntity> employeeProjectEntities = new HashSet<>();
+        for (EmployeeDTO employeeDTO : addProjectDTO.getProjectEmployees()) {
+            EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
+            employeeProjectEntity.setProjectEntity(projectEntity);
+            employeeProjectEntity.setEmployeeId(employeeDTO.getId());
+            employeeProjectEntities.add(employeeProjectEntity);
+        }
+        projectEntity.setProjectEmployees(employeeProjectEntities);
         return projectEntity;
     }
 }
