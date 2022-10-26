@@ -1,14 +1,18 @@
 package de.szut.lf8_project.dtos.projectDto;
 
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
 public class AddProjectDTO {
 
     @NotBlank(message = "The description must not be blank")
