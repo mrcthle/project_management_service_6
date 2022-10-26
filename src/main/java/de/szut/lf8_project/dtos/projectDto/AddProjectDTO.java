@@ -1,6 +1,6 @@
 package de.szut.lf8_project.dtos.projectDto;
 
-import de.szut.lf8_project.entities.EmployeeProjectEntity;
+import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -28,6 +28,10 @@ public class AddProjectDTO {
     private LocalDateTime startDate;
     private LocalDateTime plannedEndDate;
     private LocalDateTime endDate;
-    private Set<EmployeeProjectEntity> projectEmployees;
+    
+    @NotNull(message = "The project needs a leader")
+    private Long projectLeader;
+    
+    private List<EmployeeDTO> projectEmployees;
 }
 
