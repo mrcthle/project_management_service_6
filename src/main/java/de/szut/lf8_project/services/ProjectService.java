@@ -19,6 +19,9 @@ public class ProjectService {
     
     public ProjectService(ProjectRepository repository, CustomerService customerService, EmployeeProjectService employeeProjectService) {
         this.repository = repository;
+        this.customerService = customerService;
+        this.employeeService = EmployeeService.getInstance();
+        this.employeeProjectService = employeeProjectService;
     }
     
     public ProjectEntity create(ProjectEntity projectEntity) {
