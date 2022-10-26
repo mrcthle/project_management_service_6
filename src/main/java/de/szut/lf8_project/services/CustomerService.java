@@ -1,6 +1,7 @@
 package de.szut.lf8_project.services;
 
 import de.szut.lf8_project.dtos.customerDto.CustomerDTO;
+import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,10 @@ public class CustomerService {
     }
     
     public CustomerDTO getCustomerById(Long id) {
-        return (id > customerList.length || id <= 0) ? null : customerList[(int) (id - 1)];
+        if(id > customerList.length || id <= 0) {
+            throw new ResourceNotFoundException("Customer with id = " + id + " not found.");
+        } else {
+            return customerList[(int) (id - 1)];
+        }
     }
 }
