@@ -21,9 +21,6 @@ public class AddProjectDTO {
     @NotNull(message = "The customer id must not be null")
     private Long customerId;
     
-    @NotBlank(message = "There must be a contact at customer side")
-    private String contactCustomerSide;
-    
     private String comment;
     private LocalDateTime startDate;
     private LocalDateTime plannedEndDate;
