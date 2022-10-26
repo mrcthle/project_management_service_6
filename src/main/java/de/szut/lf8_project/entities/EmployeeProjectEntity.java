@@ -26,7 +26,4 @@ public class EmployeeProjectEntity {
             cascade = CascadeType.DETACH //Todo: Cascade Type überprüfen
     )
     private ProjectEntity projectEntity;
-    
-    @Column(name = "is_project_leader", nullable = false)
-    private boolean isProjectLeader;
 }
