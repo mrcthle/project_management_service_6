@@ -55,7 +55,6 @@ public class ProjectService {
         entity.setId(newEntity.getId());
         entity.setDescription(newEntity.getDescription());
         entity.setCustomerId(newEntity.getCustomerId());
-        entity.setContactCustomerSide(newEntity.getContactCustomerSide());
         entity.setComment(newEntity.getComment());
         entity.setStartDate(newEntity.getStartDate());
         entity.setPlannedEndDate(newEntity.getPlannedEndDate());
