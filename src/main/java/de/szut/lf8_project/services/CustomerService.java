@@ -2,7 +2,6 @@ package de.szut.lf8_project.services;
 
 import de.szut.lf8_project.dtos.customerDto.CustomerDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerService {
@@ -18,6 +17,6 @@ public class CustomerService {
     }
     
     public CustomerDTO getCustomerById(Long id) {
-        return (id > 3 || id < 1) ? null : customerList[(int) (id - 1)];
+        return (id > customerList.length || id <= 0) ? null : customerList[(int) (id - 1)];
     }
 }
