@@ -19,13 +19,11 @@ public class CustomerService {
         return List.of(customerList);
     }
     
-    public CustomerDTO getCustomerByContact(String contact) {
-        CustomerDTO response = null;
-        for (CustomerDTO customer : customerList) {
-            if(customer.getContactCustomerSide().equals(contact)) {
-                response = customer;
-            }
+    public CustomerDTO getCustomerById(Long id) {
+        if(id > customerList.length || id <= 0) {
+            throw new ResourceNotFoundException("Customer with id = " + id + " not found.");
+        } else {
+            return customerList[(int) (id - 1)];
         }
-        return response;
     }
 }
