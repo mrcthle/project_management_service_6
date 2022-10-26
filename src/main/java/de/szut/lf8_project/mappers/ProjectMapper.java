@@ -5,15 +5,28 @@ import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
+import de.szut.lf8_project.services.EmployeeService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
 public class ProjectMapper {
     
+    private final EmployeeService employeeService;
+    
+    public ProjectMapper(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+    
     public GetProjectDTO mapToGetDto(ProjectEntity projectEntity) {
+        List<EmployeeDTO> employees = new ArrayList<>();
+        for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
+            employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
+        }
         return new GetProjectDTO(
                 projectEntity.getId(),
                 projectEntity.getDescription(),
@@ -22,7 +35,7 @@ public class ProjectMapper {
                 projectEntity.getStartDate(),
                 projectEntity.getPlannedEndDate(),
                 projectEntity.getEndDate(),
-                projectEntity.getProjectEmployees()
+                employees
         );
     }
     
