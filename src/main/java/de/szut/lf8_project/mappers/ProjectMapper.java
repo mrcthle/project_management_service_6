@@ -1,9 +1,14 @@
 package de.szut.lf8_project.mappers;
 
+import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
+import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class ProjectMapper {
@@ -13,7 +18,6 @@ public class ProjectMapper {
                 projectEntity.getId(),
                 projectEntity.getDescription(),
                 projectEntity.getCustomerId(),
-                projectEntity.getContactCustomerSide(),
                 projectEntity.getComment(),
                 projectEntity.getStartDate(),
                 projectEntity.getPlannedEndDate(),
@@ -26,7 +30,6 @@ public class ProjectMapper {
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setDescription(addProjectDTO.getDescription());
         projectEntity.setCustomerId(addProjectDTO.getCustomerId());
-        projectEntity.setContactCustomerSide(addProjectDTO.getContactCustomerSide());
         projectEntity.setStartDate(addProjectDTO.getStartDate());
         projectEntity.setPlannedEndDate(addProjectDTO.getPlannedEndDate());
         projectEntity.setEndDate(addProjectDTO.getEndDate());
