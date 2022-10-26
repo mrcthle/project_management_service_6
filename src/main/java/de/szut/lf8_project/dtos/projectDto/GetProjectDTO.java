@@ -16,7 +16,6 @@ public class GetProjectDTO {
     private Long id;
     private String description;
     private Long customerId;
-    private String contactCustomerSide;
     private String comment;
     private LocalDateTime startDate;
     private LocalDateTime plannedEndDate;
