@@ -14,7 +14,7 @@ public class CustomerService {
     };
     
     public List<CustomerDTO> getCustomers() {
-        return new ArrayList<>(List.of(customerList));
+        return List.of(customerList);
     }
     
     public CustomerDTO getCustomerById(Long id) {
