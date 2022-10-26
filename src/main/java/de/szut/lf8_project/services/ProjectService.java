@@ -11,23 +11,27 @@ import java.util.Set;
 
 @Service
 public class ProjectService {
-    
+
     private final ProjectRepository repository;
-    private final  CustomerService customerService;
+    private final CustomerService customerService;
     private final EmployeeService employeeService;
     private final EmployeeProjectService employeeProjectService;
-    
-    public ProjectService(ProjectRepository repository, CustomerService customerService, EmployeeProjectService employeeProjectService) {
+
+    public ProjectService(
+            ProjectRepository repository,
+            CustomerService customerService,
+            EmployeeProjectService employeeProjectService
+    ) {
         this.repository = repository;
         this.customerService = customerService;
         this.employeeService = EmployeeService.getInstance();
         this.employeeProjectService = employeeProjectService;
     }
-    
+
     public ProjectEntity create(ProjectEntity projectEntity) {
         customerService.getCustomerById(projectEntity.getCustomerId());
         employeeService.getEmployee(projectEntity.getProjectLeader());
-        
+
         Set<EmployeeProjectEntity> employeeProjectEntities = projectEntity.getProjectEmployees();
         for (EmployeeProjectEntity employeeProjectEntity : employeeProjectEntities) {
             employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
@@ -39,16 +43,16 @@ public class ProjectService {
         }
         return projectEntity;
     }
-    
+
     public ProjectEntity readById(Long id) {
         Optional<ProjectEntity> projectEntity = repository.findById(id);
         return projectEntity.orElse(null);
     }
-    
+
     public List<ProjectEntity> readAll() {
         return repository.findAll();
     }
-    
+
     public ProjectEntity update(ProjectEntity newEntity) {
         Optional<ProjectEntity> entityToUpdate = repository.findById(newEntity.getId());
         if (entityToUpdate.isEmpty()) {
@@ -65,7 +69,7 @@ public class ProjectService {
         entity.setProjectEmployees(newEntity.getProjectEmployees());
         return repository.save(entity);
     }
-    
+
     public ProjectEntity delete(ProjectEntity projectEntity) {
         Optional<ProjectEntity> entity = repository.findById(projectEntity.getId());
         if (entity.isPresent()) {
