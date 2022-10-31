@@ -24,6 +24,7 @@ public class ProjectMapper {
     
     public GetProjectDTO mapToGetDto(ProjectEntity projectEntity) {
         List<EmployeeDTO> employees = new ArrayList<>();
+        List<String> qualifications = new ArrayList<>();
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
             employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
         }
@@ -35,7 +36,8 @@ public class ProjectMapper {
                 projectEntity.getStartDate(),
                 projectEntity.getPlannedEndDate(),
                 projectEntity.getEndDate(),
-                employees
+                employees,
+                qualifications
         );
     }
     
