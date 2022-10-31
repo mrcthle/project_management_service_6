@@ -56,11 +56,12 @@ public class ProjectMapper {
         projectEntity.setEndDate(addProjectDTO.getEndDate());
         projectEntity.setProjectLeader(addProjectDTO.getProjectLeader());
         Set<EmployeeProjectEntity> employeeProjectEntities = new HashSet<>();
-        if (addProjectDTO.getProjectEmployees() != null) {
-            for (EmployeeDTO employeeDTO : addProjectDTO.getProjectEmployees()) {
+        if (addProjectDTO.getProjectEmployeeIds() != null) {
+            for (Long employeeId : addProjectDTO.getProjectEmployeeIds()) {
+                employeeService.getEmployee(employeeId);
                 EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
                 employeeProjectEntity.setProjectEntity(projectEntity);
-                employeeProjectEntity.setEmployeeId(employeeDTO.getId());
+                employeeProjectEntity.setEmployeeId(employeeId);
                 employeeProjectEntities.add(employeeProjectEntity);
             }
         }
