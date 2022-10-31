@@ -30,5 +30,8 @@ public class AddProjectDTO {
     private Long projectLeader;
     
     private List<EmployeeDTO> projectEmployees;
+    
+    @NotNull(message = "The list of qualifications must not be null")
+    private List<String> qualifications;
 }
 
