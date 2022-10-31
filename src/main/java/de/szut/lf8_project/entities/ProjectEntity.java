@@ -45,4 +45,12 @@ public class ProjectEntity {
             cascade = CascadeType.ALL
     )
     private Set<EmployeeProjectEntity> projectEmployees;
+    
+    @Column(name = "project_qualifications")
+    @OneToMany(
+            mappedBy = "projectQualification",
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
+    private Set<ProjectQualificationEntity> projectQualifications;
 }
