@@ -20,7 +20,6 @@ public class ProjectQualificationEntity {
     @Column(name = "qualification", nullable = false)
     private String qualification;
     
-    @Column(name = "project", nullable = false)
     @ManyToOne(
             fetch = FetchType.LAZY,
             cascade = CascadeType.DETACH
