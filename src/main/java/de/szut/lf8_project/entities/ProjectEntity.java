@@ -48,7 +48,7 @@ public class ProjectEntity {
     
     @Column(name = "project_qualifications")
     @OneToMany(
-            mappedBy = "projectQualification",
+            mappedBy = "qualification",
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
