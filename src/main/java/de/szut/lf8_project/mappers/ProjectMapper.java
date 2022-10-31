@@ -54,19 +54,23 @@ public class ProjectMapper {
         projectEntity.setEndDate(addProjectDTO.getEndDate());
         projectEntity.setProjectLeader(addProjectDTO.getProjectLeader());
         Set<EmployeeProjectEntity> employeeProjectEntities = new HashSet<>();
-        for (EmployeeDTO employeeDTO : addProjectDTO.getProjectEmployees()) {
-            EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
-            employeeProjectEntity.setProjectEntity(projectEntity);
-            employeeProjectEntity.setEmployeeId(employeeDTO.getId());
-            employeeProjectEntities.add(employeeProjectEntity);
+        if (addProjectDTO.getProjectEmployees() != null) {
+            for (EmployeeDTO employeeDTO : addProjectDTO.getProjectEmployees()) {
+                EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
+                employeeProjectEntity.setProjectEntity(projectEntity);
+                employeeProjectEntity.setEmployeeId(employeeDTO.getId());
+                employeeProjectEntities.add(employeeProjectEntity);
+            }
         }
         projectEntity.setProjectEmployees(employeeProjectEntities);
         Set<ProjectQualificationEntity> projectQualificationEntities = new HashSet<>();
-        for (String qualification : addProjectDTO.getQualifications()) {
-            ProjectQualificationEntity projectQualification = new ProjectQualificationEntity();
-            projectQualification.setProjectEntity(projectEntity);
-            projectQualification.setQualification(qualification);
-            projectQualificationEntities.add(projectQualification);
+        if (addProjectDTO.getQualifications() != null) {
+            for (String qualification : addProjectDTO.getQualifications()) {
+                ProjectQualificationEntity projectQualification = new ProjectQualificationEntity();
+                projectQualification.setProjectEntity(projectEntity);
+                projectQualification.setQualification(qualification);
+                projectQualificationEntities.add(projectQualification);
+            }
         }
         projectEntity.setProjectQualifications(projectQualificationEntities);
         return projectEntity;
