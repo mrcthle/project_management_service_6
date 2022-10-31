@@ -5,6 +5,7 @@ import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
+import de.szut.lf8_project.entities.ProjectQualificationEntity;
 import de.szut.lf8_project.services.EmployeeService;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class ProjectMapper {
         List<String> qualifications = new ArrayList<>();
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
             employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
+        }
+        for (ProjectQualificationEntity projectQualification : projectEntity.getProjectQualifications()) {
+            qualifications.add(projectQualification.getQualification());
         }
         return new GetProjectDTO(
                 projectEntity.getId(),
@@ -57,6 +61,14 @@ public class ProjectMapper {
             employeeProjectEntities.add(employeeProjectEntity);
         }
         projectEntity.setProjectEmployees(employeeProjectEntities);
+        Set<ProjectQualificationEntity> projectQualificationEntities = new HashSet<>();
+        for (String qualification : addProjectDTO.getQualifications()) {
+            ProjectQualificationEntity projectQualification = new ProjectQualificationEntity();
+            projectQualification.setProjectEntity(projectEntity);
+            projectQualification.setQualification(qualification);
+            projectQualificationEntities.add(projectQualification);
+        }
+        projectEntity.setProjectQualifications(projectQualificationEntities);
         return projectEntity;
     }
 }
