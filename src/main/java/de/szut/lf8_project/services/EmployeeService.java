@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -34,10 +35,12 @@ public class EmployeeService {
     public EmployeeDTO getEmployee(final Long id) {
         HttpHeaders httpsHeaders = new HttpHeaders();
         httpsHeaders.set("Authorization", "Bearer " + jwtToken);
-        ResponseEntity<EmployeeDTO> response =
-                restTemplate.exchange(url + "/" + id, HttpMethod.GET, new HttpEntity<String>(httpsHeaders), EmployeeDTO.class);
-        EmployeeDTO employeeDTO = response.getBody();
-        if (employeeDTO == null) {
+        EmployeeDTO employeeDTO;
+        try {
+            ResponseEntity<EmployeeDTO> response =
+                    restTemplate.exchange(url + "/" + id, HttpMethod.GET, new HttpEntity<String>(httpsHeaders), EmployeeDTO.class);
+            employeeDTO  = response.getBody();
+        } catch (HttpClientErrorException e) {
             throw new ResourceNotFoundException("Employee with id = " + id + " not found.");
         }
         return employeeDTO;
