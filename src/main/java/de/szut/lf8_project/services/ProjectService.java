@@ -82,13 +82,12 @@ public class ProjectService {
         return repository.save(entity);
     }
     
-    public ProjectEntity delete(ProjectEntity projectEntity) {
-        Optional<ProjectEntity> entity = repository.findById(projectEntity.getId());
-        if (entity.isPresent()) {
-            repository.delete(projectEntity);
-            return entity.get();
+    public ProjectEntity delete(Long id) {
+        Optional<ProjectEntity> projectEntity = repository.findById(id);
+        if (projectEntity.isPresent()) {
+            repository.deleteById(id);
         }
-        return null;
+        return projectEntity.orElse(null);
     }
     
     private void checkEmployeeQualification(ProjectEntity projectEntity, EmployeeDTO employeeDTO) {
