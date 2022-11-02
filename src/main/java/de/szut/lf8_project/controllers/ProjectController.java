@@ -33,10 +33,9 @@ public class ProjectController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<GetProjectDTO> deleteProject(@PathVariable Long id) {
-        ProjectEntity projectEntity = projectService.readById(id);
-        GetProjectDTO projectDTO = projectMapper.mapToGetDto(projectEntity);
-        projectService.delete(projectEntity);
-        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
+        ProjectEntity projectEntity = projectService.delete(id);
+        GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
+        return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
 }
