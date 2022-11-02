@@ -48,7 +48,7 @@ public class ProjectEntity {
     private Set<EmployeeProjectEntity> projectEmployees;
     
     @OneToMany(
-            mappedBy = "qualification",
+            mappedBy = "projectEntity",
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
