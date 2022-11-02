@@ -40,6 +40,7 @@ public class ProjectService {
             EmployeeDTO employeeDTO = employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
             checkEmployeeQualification(projectEntity, employeeDTO);
         }
+        //todo: Zeitfenster des Mitarbeiters fehlt
         projectEntity = repository.save(projectEntity);
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
             employeeProjectService.create(employeeProjectEntity);
