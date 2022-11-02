@@ -7,10 +7,7 @@ import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.ProjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("v1/api/pms/project")
@@ -33,5 +30,13 @@ public class ProjectController {
         newProjectEntity = projectService.create(newProjectEntity);
         GetProjectDTO responseDto = projectMapper.mapToGetDto(newProjectEntity);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GetProjectDTO> deleteProject(@PathVariable Long id) {
+        ProjectEntity projectEntity = projectService.readById(id);
+        GetProjectDTO projectDTO = projectMapper.mapToGetDto(projectEntity);
+        projectService.delete(projectEntity);
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 }
