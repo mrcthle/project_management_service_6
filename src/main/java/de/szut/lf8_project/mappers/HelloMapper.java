@@ -1,7 +1,8 @@
-package de.szut.lf8_project.hello;
+package de.szut.lf8_project.mappers;
 
-import de.szut.lf8_project.hello.dto.HelloCreateDto;
-import de.szut.lf8_project.hello.dto.HelloGetDto;
+import de.szut.lf8_project.dtos.helloDto.HelloCreateDto;
+import de.szut.lf8_project.dtos.helloDto.HelloGetDto;
+import de.szut.lf8_project.entities.HelloEntity;
 import org.springframework.stereotype.Service;
 
 @Service

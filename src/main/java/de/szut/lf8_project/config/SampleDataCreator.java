@@ -1,7 +1,7 @@
 package de.szut.lf8_project.config;
 
-import de.szut.lf8_project.hello.HelloEntity;
-import de.szut.lf8_project.hello.HelloRepository;
+import de.szut.lf8_project.entities.HelloEntity;
+import de.szut.lf8_project.repositories.HelloRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
