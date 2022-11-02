@@ -60,12 +60,12 @@ public class ProjectService {
     }
 
     public ProjectEntity update(ProjectEntity newEntity) {
-        Optional<ProjectEntity> entityToUpdate = repository.findById(newEntity.getId());
+        Optional<ProjectEntity> entityToUpdate = repository.findById(newEntity.getPid());
         if (entityToUpdate.isEmpty()) {
             return repository.save(newEntity);
         }
         ProjectEntity entity = entityToUpdate.get();
-        entity.setId(newEntity.getId());
+        entity.setPid(newEntity.getPid());
         entity.setDescription(newEntity.getDescription());
         entity.setCustomerId(newEntity.getCustomerId());
         entity.setComment(newEntity.getComment());
