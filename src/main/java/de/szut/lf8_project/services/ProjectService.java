@@ -49,7 +49,10 @@ public class ProjectService {
 
     public ProjectEntity readById(Long id) {
         Optional<ProjectEntity> projectEntity = repository.findById(id);
-        return projectEntity.orElse(null);
+        if (projectEntity.isPresent()) {
+            return projectEntity.get();
+        }
+        return null;
     }
 
     public List<ProjectEntity> readAll() {
