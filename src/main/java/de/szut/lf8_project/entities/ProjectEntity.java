@@ -40,7 +40,6 @@ public class ProjectEntity {
     @Column(name = "project_leader")
     private Long projectLeader;
     
-    @Column(name = "project_employees")
     @OneToMany(
             mappedBy = "projectEntity",
             fetch = FetchType.EAGER,
@@ -48,7 +47,6 @@ public class ProjectEntity {
     )
     private Set<EmployeeProjectEntity> projectEmployees;
     
-    @Column(name = "project_qualifications")
     @OneToMany(
             mappedBy = "qualification",
             fetch = FetchType.EAGER,
