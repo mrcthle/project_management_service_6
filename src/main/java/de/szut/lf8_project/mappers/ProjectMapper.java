@@ -34,7 +34,7 @@ public class ProjectMapper {
             qualifications.add(projectQualification.getQualification());
         }
         return new GetProjectDTO(
-                projectEntity.getId(),
+                projectEntity.getPid(),
                 projectEntity.getDescription(),
                 projectEntity.getCustomerId(),
                 projectEntity.getComment(),
