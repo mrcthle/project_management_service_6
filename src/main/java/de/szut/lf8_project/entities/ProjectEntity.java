@@ -19,11 +19,13 @@ public class ProjectEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pid;
     
+    @Column(name = "description")
     private String description;
     
     @Column(name = "customer_Id")
     private Long customerId;
     
+    @Column(name = "comment")
     private String comment;
     
     @Column(name = "start_date")
