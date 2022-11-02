@@ -28,6 +28,7 @@ class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/hello").hasRole("user")
                 .antMatchers("/v1/api/pms/project").hasRole("user")
+                .antMatchers("/v1/api/pms/project/delete/{id}").hasRole("user")
                 .anyRequest()
                 .permitAll();
         http.csrf().disable();
