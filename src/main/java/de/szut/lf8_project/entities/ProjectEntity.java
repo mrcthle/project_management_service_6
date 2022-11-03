@@ -17,13 +17,15 @@ public class ProjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long pid;
     
+    @Column(name = "description")
     private String description;
     
     @Column(name = "customer_Id")
     private Long customerId;
     
+    @Column(name = "comment")
     private String comment;
     
     @Column(name = "start_date")
@@ -38,7 +40,6 @@ public class ProjectEntity {
     @Column(name = "project_leader")
     private Long projectLeader;
     
-    @Column(name = "project_employees")
     @OneToMany(
             mappedBy = "projectEntity",
             fetch = FetchType.EAGER,
@@ -46,9 +47,8 @@ public class ProjectEntity {
     )
     private Set<EmployeeProjectEntity> projectEmployees;
     
-    @Column(name = "project_qualifications")
     @OneToMany(
-            mappedBy = "qualification",
+            mappedBy = "projectEntity",
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )

@@ -34,7 +34,7 @@ public class ProjectMapper {
             qualifications.add(projectQualification.getQualification());
         }
         return new GetProjectDTO(
-                projectEntity.getId(),
+                projectEntity.getPid(),
                 projectEntity.getDescription(),
                 projectEntity.getCustomerId(),
                 projectEntity.getComment(),
@@ -50,6 +50,7 @@ public class ProjectMapper {
     public ProjectEntity mapAddProjectDtoToEntity(AddProjectDTO addProjectDTO) {
         ProjectEntity projectEntity = new ProjectEntity();
         projectEntity.setDescription(addProjectDTO.getDescription());
+        projectEntity.setComment(addProjectDTO.getComment());
         projectEntity.setCustomerId(addProjectDTO.getCustomerId());
         projectEntity.setStartDate(addProjectDTO.getStartDate());
         projectEntity.setPlannedEndDate(addProjectDTO.getPlannedEndDate());

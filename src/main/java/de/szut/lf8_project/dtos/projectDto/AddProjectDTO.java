@@ -1,6 +1,5 @@
 package de.szut.lf8_project.dtos.projectDto;
 
-import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +21,11 @@ public class AddProjectDTO {
     private Long customerId;
     
     private String comment;
+    
+    @NotNull(message = "The start date must not be null")
     private LocalDateTime startDate;
+
+    @NotNull(message = "The planned end date must not be null")
     private LocalDateTime plannedEndDate;
     private LocalDateTime endDate;
     
