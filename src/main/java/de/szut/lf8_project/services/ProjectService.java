@@ -4,10 +4,13 @@ import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
+import de.szut.lf8_project.exceptionHandling.EmployeeNotAvailableException;
 import de.szut.lf8_project.exceptionHandling.SkillSetNotFound;
+import de.szut.lf8_project.exceptionHandling.TimeMachineException;
 import de.szut.lf8_project.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +35,15 @@ public class ProjectService {
     }
 
     public ProjectEntity create(ProjectEntity projectEntity) {
+        if ((projectEntity.getPlannedEndDate().isBefore(projectEntity.getStartDate()) ||
+                projectEntity.getEndDate().isBefore(projectEntity.getStartDate()) || 
+                projectEntity.getPlannedEndDate().isEqual(projectEntity.getStartDate()) || 
+                projectEntity.getEndDate().isEqual(projectEntity.getStartDate())) && 
+                (!projectEntity.getDescription().contains("time machine"))
+        ) {
+            throw new TimeMachineException("If your project is not a time machine, there is no way the end date is before the start date.");
+        }
+        
         customerService.getCustomerById(projectEntity.getCustomerId());
         employeeService.getEmployee(projectEntity.getProjectLeader());
 
