@@ -39,6 +39,7 @@ public class ProjectService {
         for (EmployeeProjectEntity employeeProjectEntity : employeeProjectEntities) {
             EmployeeDTO employeeDTO = employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
             checkEmployeeQualification(projectEntity, employeeDTO);
+            checkEmployeeAvailability(projectEntity, employeeDTO.getId());
         }
         //todo: Zeitfenster des Mitarbeiters fehlt
         projectEntity = repository.save(projectEntity);
@@ -103,6 +104,23 @@ public class ProjectService {
                 throw new SkillSetNotFound(
                         "Employee with id = " + employeeDTO.getId() + " does not have the needed skill '" + projectQualification.getQualification() + "'."
                 );
+            }
+        }
+    }
+    
+    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {
+        List<EmployeeProjectEntity> employeeProjectMappings = employeeProjectService.readAllByEmployeeId(employeeId);
+        LocalDateTime projectStart;
+        LocalDateTime projectPlannedEnd;
+        for (EmployeeProjectEntity employeeProject : employeeProjectMappings) {
+            projectStart = readById(employeeProject.getProjectEntity().getPid()).getStartDate();
+            projectPlannedEnd = readById(employeeProject.getProjectEntity().getPid()).getPlannedEndDate();
+            if (
+                    projectEntity.getStartDate().isAfter(projectPlannedEnd) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
+                    projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) ||
+                    projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
+            ) { 
+                throw new EmployeeNotAvailableException("Employee with id = " + employeeId + " is blocked by project with id = " + projectEntity.getPid());
             }
         }
     }
