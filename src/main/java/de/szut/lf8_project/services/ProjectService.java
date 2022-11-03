@@ -97,11 +97,9 @@ public class ProjectService {
     }
     
     public ProjectEntity delete(Long id) {
-        Optional<ProjectEntity> projectEntity = repository.findById(id);
-        if (projectEntity.isPresent()) {
-            repository.deleteById(id);
-        }
-        return projectEntity.orElse(null);
+        ProjectEntity projectEntity = readById(id);
+        repository.deleteById(id);
+        return projectEntity;
     }
     
     private void checkEmployeeQualification(ProjectEntity projectEntity, EmployeeDTO employeeDTO) {
