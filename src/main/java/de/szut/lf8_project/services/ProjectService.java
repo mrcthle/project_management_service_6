@@ -74,26 +74,23 @@ public class ProjectService {
         return repository.findAll();
     }
 
-    public ProjectEntity update(ProjectEntity newEntity) {//todo: verify new employees (time and qualification) 
-        Optional<ProjectEntity> entityToUpdate = repository.findById(newEntity.getPid());
-        if (entityToUpdate.isEmpty()) {
-            return repository.save(newEntity);
-        }
-        ProjectEntity entity = entityToUpdate.get();
-        entity.setPid(newEntity.getPid());
-        entity.setDescription(newEntity.getDescription());
-        entity.setCustomerId(newEntity.getCustomerId());
-        entity.setComment(newEntity.getComment());
-        entity.setStartDate(newEntity.getStartDate());
-        entity.setPlannedEndDate(newEntity.getPlannedEndDate());
-        entity.setEndDate(newEntity.getEndDate());
-        entity.setProjectEmployees(newEntity.getProjectEmployees());
+    public ProjectEntity update(ProjectEntity newEntity) {
+        ProjectEntity entityToUpdate = readById(newEntity.getPid());
+        entityToUpdate.setPid(newEntity.getPid());
+        entityToUpdate.setDescription(newEntity.getDescription());
+        entityToUpdate.setCustomerId(newEntity.getCustomerId());
+        entityToUpdate.setComment(newEntity.getComment());
+        entityToUpdate.setStartDate(newEntity.getStartDate());
+        entityToUpdate.setPlannedEndDate(newEntity.getPlannedEndDate());
+        entityToUpdate.setEndDate(newEntity.getEndDate());
+        entityToUpdate.setProjectEmployees(newEntity.getProjectEmployees());
         for (EmployeeProjectEntity employeeProjectEntity : newEntity.getProjectEmployees()) {
             EmployeeDTO employeeDTO = employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
             checkEmployeeQualification(newEntity, employeeDTO);
+            checkEmployeeAvailability(newEntity, employeeDTO.getId());
         }
-        entity.setProjectQualifications(newEntity.getProjectQualifications());
-        return repository.save(entity);
+        entityToUpdate.setProjectQualifications(newEntity.getProjectQualifications());
+        return repository.save(entityToUpdate);
     }
     
     public ProjectEntity delete(Long id) {
