@@ -2,6 +2,7 @@ package de.szut.lf8_project.exceptionHandling;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -19,6 +20,25 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(SkillSetNotFound.class)
     public ResponseEntity<?> handleSkillSetNotFoundException(SkillSetNotFound ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(EmployeeNotAvailableException.class)
+    public ResponseEntity<?> handleEmployeeNotAvailableException(EmployeeNotAvailableException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+        String errormessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), errormessage, request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler(TimeMachineException.class)
+    public ResponseEntity<?> handleTimeMachineException(TimeMachineException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
