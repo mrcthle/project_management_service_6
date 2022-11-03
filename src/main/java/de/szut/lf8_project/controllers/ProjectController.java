@@ -1,7 +1,9 @@
 package de.szut.lf8_project.controllers;
 
+import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
+import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.ProjectService;
@@ -45,6 +47,17 @@ public class ProjectController {
         return new ResponseEntity<>(getProjectDTOs, HttpStatus.OK);
         //ToDo: check if we can send a message instead of displaying an empty array
     }
+    
+    @GetMapping("readEmployees/{id}")
+    public ResponseEntity<List<EmployeeDTO>> readAllEmployeesByProjectId(@PathVariable Long id) {
+        ProjectEntity projectEntity = projectService.readById(id);
+        List<EmployeeDTO> employees = new ArrayList<>();
+        for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
+            employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
+        }
+        return new ResponseEntity<>(employees, HttpStatus.OK);
+    }
+    
     
     @PostMapping()
     public ResponseEntity<GetProjectDTO> createProject(@RequestBody @Valid AddProjectDTO addProjectDTO) {
