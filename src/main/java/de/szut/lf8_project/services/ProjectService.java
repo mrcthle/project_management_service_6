@@ -5,6 +5,7 @@ import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
 import de.szut.lf8_project.exceptionHandling.EmployeeNotAvailableException;
+import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
 import de.szut.lf8_project.exceptionHandling.SkillSetNotFound;
 import de.szut.lf8_project.exceptionHandling.TimeMachineException;
 import de.szut.lf8_project.repositories.ProjectRepository;
@@ -63,10 +64,10 @@ public class ProjectService {
 
     public ProjectEntity readById(Long id) {
         Optional<ProjectEntity> projectEntity = repository.findById(id);
-        if (projectEntity.isPresent()) {
-            return projectEntity.get();
+        if (projectEntity.isEmpty()) {
+            throw new ResourceNotFoundException("Project with id = " + id + " does not exist.");
         }
-        return null;
+        return projectEntity.get();
     }
 
     public List<ProjectEntity> readAll() {
@@ -96,11 +97,9 @@ public class ProjectService {
     }
     
     public ProjectEntity delete(Long id) {
-        Optional<ProjectEntity> projectEntity = repository.findById(id);
-        if (projectEntity.isPresent()) {
-            repository.deleteById(id);
-        }
-        return projectEntity.orElse(null);
+        ProjectEntity projectEntity = readById(id);
+        repository.deleteById(id);
+        return projectEntity;
     }
     
     private void checkEmployeeQualification(ProjectEntity projectEntity, EmployeeDTO employeeDTO) {

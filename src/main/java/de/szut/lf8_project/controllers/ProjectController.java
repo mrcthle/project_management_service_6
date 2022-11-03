@@ -26,6 +26,13 @@ public class ProjectController {
         this.projectService = projectService;
     }
     
+    @GetMapping("/read/{id}")
+    public ResponseEntity<GetProjectDTO> readProjectById(@PathVariable Long id) {
+        ProjectEntity projectEntity = projectService.readById(id);
+        GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
+        return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
+    }
+    
     @PostMapping()
     public ResponseEntity<GetProjectDTO> createProject(@RequestBody @Valid AddProjectDTO addProjectDTO) {
         ProjectEntity newProjectEntity = projectMapper.mapAddProjectDtoToEntity(addProjectDTO);
