@@ -21,4 +21,8 @@ public class ProjectQualificationService {
     public List<ProjectQualificationEntity> readAllByProjectEntity(ProjectEntity projectEntity) {
         return repository.findAllByProjectEntity(projectEntity);
     }
+    
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
 }
