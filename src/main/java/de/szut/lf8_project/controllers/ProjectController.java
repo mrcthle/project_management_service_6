@@ -41,6 +41,15 @@ public class ProjectController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
     
+    @PutMapping("/update/{id}")
+    public ResponseEntity<GetProjectDTO> updateProjectEntity(@PathVariable Long id, @RequestBody @Valid AddProjectDTO newAddProjectDTO) {
+        ProjectEntity updatedProjectEntity = projectMapper.mapAddProjectDtoToEntity(newAddProjectDTO);
+        updatedProjectEntity.setPid(id);
+        updatedProjectEntity = projectService.update(updatedProjectEntity);
+        GetProjectDTO returnProjectDTO = projectMapper.mapToGetDto(updatedProjectEntity);
+        return new ResponseEntity<>(returnProjectDTO, HttpStatus.OK);
+    }
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
         ProjectEntity projectEntity = projectService.delete(id);
