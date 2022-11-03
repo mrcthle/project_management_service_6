@@ -67,6 +67,7 @@ public class ProjectService {
     }
 
     public ProjectEntity update(ProjectEntity newEntity) {
+        checkStartEndDates(newEntity);
         ProjectEntity entityToUpdate = readById(newEntity.getPid());
         entityToUpdate.setPid(newEntity.getPid());
         entityToUpdate.setDescription(newEntity.getDescription());
