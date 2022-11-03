@@ -1,6 +1,5 @@
 package de.szut.lf8_project.dtos.projectDto;
 
-import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
