@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/pms/project")
@@ -31,6 +33,17 @@ public class ProjectController {
         ProjectEntity projectEntity = projectService.readById(id);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
+    }
+    
+    @GetMapping("/read")
+    public ResponseEntity<List<GetProjectDTO>> readAllProjectEntities() {
+        List<ProjectEntity> projectEntities = projectService.readAll();
+        List<GetProjectDTO> getProjectDTOs = new ArrayList<>();
+        for (ProjectEntity projectEntity : projectEntities) {
+            getProjectDTOs.add(projectMapper.mapToGetDto(projectEntity));
+        }
+        return new ResponseEntity<>(getProjectDTOs, HttpStatus.OK);
+        //ToDo: check if we can send a message instead of displaying an empty array
     }
     
     @PostMapping()

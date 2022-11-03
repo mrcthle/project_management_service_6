@@ -30,6 +30,7 @@ class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .antMatchers("/v1/api/pms/project").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/project/{id}").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/project/read/{id}").hasAnyRole("user", "product_owner")
+                .antMatchers("/v1/api/pms/project/read").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/project/update/{id}").hasRole("product_owner")
                 .anyRequest()
                 .permitAll();
