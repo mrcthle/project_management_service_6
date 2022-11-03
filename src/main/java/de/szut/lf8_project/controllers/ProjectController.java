@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("v1/api/pms/project")
 public class ProjectController {
@@ -25,7 +27,7 @@ public class ProjectController {
     }
     
     @PostMapping()
-    public ResponseEntity<GetProjectDTO> createProject(@RequestBody AddProjectDTO addProjectDTO) {
+    public ResponseEntity<GetProjectDTO> createProject(@RequestBody @Valid AddProjectDTO addProjectDTO) {
         ProjectEntity newProjectEntity = projectMapper.mapAddProjectDtoToEntity(addProjectDTO);
         newProjectEntity = projectService.create(newProjectEntity);
         GetProjectDTO responseDto = projectMapper.mapToGetDto(newProjectEntity);
