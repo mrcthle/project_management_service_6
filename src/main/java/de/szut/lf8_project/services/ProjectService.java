@@ -39,15 +39,7 @@ public class ProjectService {
     }
 
     public ProjectEntity create(ProjectEntity projectEntity) {
-        if ((projectEntity.getPlannedEndDate().isBefore(projectEntity.getStartDate()) ||
-                projectEntity.getEndDate().isBefore(projectEntity.getStartDate()) || 
-                projectEntity.getPlannedEndDate().isEqual(projectEntity.getStartDate()) || 
-                projectEntity.getEndDate().isEqual(projectEntity.getStartDate())) && 
-                (!projectEntity.getDescription().contains("time machine"))
-        ) {
-            throw new TimeMachineException("If your project is not a time machine, there is no way the end date is before the start date.");
-        }
-        
+        checkStartEndDates(projectEntity);
         customerService.getCustomerById(projectEntity.getCustomerId());
         employeeService.getEmployee(projectEntity.getProjectLeader());
 
