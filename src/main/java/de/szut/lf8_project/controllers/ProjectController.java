@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("v1/api/pms/project")
@@ -62,7 +64,6 @@ public class ProjectController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
     
-    
     @PostMapping()
     public ResponseEntity<GetProjectDTO> createProject(@RequestBody @Valid AddProjectDTO addProjectDTO) {
         ProjectEntity newProjectEntity = projectMapper.mapAddProjectDtoToEntity(addProjectDTO);
@@ -83,6 +84,22 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
         ProjectEntity projectEntity = projectService.delete(id);
+        GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
+        return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
+    }
+    
+    @DeleteMapping("{projectId}/{employeeId}")
+    public ResponseEntity<GetProjectDTO> removeEmployeeFromProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
+        ProjectEntity projectEntity = projectService.readById(projectId);
+        Set<EmployeeProjectEntity> employeeProjectEntities = projectEntity.getProjectEmployees();
+        for (EmployeeProjectEntity employeeProjectEntity : employeeProjectEntities) {
+            if (Objects.equals(employeeProjectEntity.getEmployeeId(), employeeId)) {
+                employeeProjectEntities.remove(employeeProjectEntity);
+                break;
+            }
+        }
+        projectEntity.setProjectEmployees(employeeProjectEntities);
+        projectEntity = projectService.update(projectEntity);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
