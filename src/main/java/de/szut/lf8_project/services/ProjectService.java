@@ -134,12 +134,14 @@ public class ProjectService {
         LocalDateTime projectStart;
         LocalDateTime projectPlannedEnd;
         for (EmployeeProjectEntity employeeProject : employeeProjectMappings) {
+            if (Objects.equals(employeeProject.getProjectEntity().getPid(), projectEntity.getPid())) {
+                continue;
+            }
             projectStart = readById(employeeProject.getProjectEntity().getPid()).getStartDate();
             projectPlannedEnd = readById(employeeProject.getProjectEntity().getPid()).getPlannedEndDate();
-            if (
-                    projectEntity.getStartDate().isAfter(projectPlannedEnd) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
-                    projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) ||
-                    projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
+            if (projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
+                projectEntity.getPlannedEndDate().isAfter(projectStart) && projectEntity.getPlannedEndDate().isBefore(projectPlannedEnd) ||
+                projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
             ) { 
                 throw new EmployeeNotAvailableException("Employee with id = " + employeeId + " is blocked by project with id = " + projectEntity.getPid());
             }
