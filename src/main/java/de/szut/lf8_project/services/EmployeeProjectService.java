@@ -33,12 +33,7 @@ public class EmployeeProjectService {
         return repository.findAllByProjectEntity(projectEntity);
     }
     
-    public EmployeeProjectEntity readByEmployeeIdAndProjectEntity(Long id, ProjectEntity entity) {
-        return repository.readByEmployeeIdAndProjectEntity(id, entity);
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
-    
-    public EmployeeProjectEntity deleteByEmployeeIdAndProjectEntity(Long id, ProjectEntity entity) {
-        return repository.deleteByEmployeeIdAndProjectEntity(id, entity);
-    }
-
 }
