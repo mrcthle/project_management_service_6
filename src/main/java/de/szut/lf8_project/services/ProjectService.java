@@ -135,4 +135,37 @@ public class ProjectService {
             }
         }
     }
+    
+    private void checkStartEndDates(ProjectEntity projectEntity) {
+        if ((projectEntity.getPlannedEndDate().isBefore(projectEntity.getStartDate()) ||
+                projectEntity.getPlannedEndDate().isEqual(projectEntity.getStartDate())) &&
+                (!projectEntity.getDescription().contains("time machine"))
+        ) {
+            throw new TimeMachineException("If your project is not a time machine, there is no way the planned end date is before the start date.");
+        }
+        if (projectEntity.getEndDate() != null) {
+            if ((projectEntity.getEndDate().isBefore(projectEntity.getStartDate()) ||
+                    projectEntity.getEndDate().isEqual(projectEntity.getStartDate())) && 
+                    !projectEntity.getDescription().contains("time machine")
+            ) {
+                throw new TimeMachineException("If your project is not a time machine, there is no way the end date is before the start date.");
+            }
+        } 
+    }
+    
+    private void checkEmployeeProjectEntities(ProjectEntity projectEntity) {
+        for (EmployeeProjectEntity employeeProjectEntity : employeeProjectService.readAllByProjectEntity(projectEntity)) {
+            if (!projectEntity.getProjectEmployees().contains(employeeProjectEntity)) {
+                employeeProjectService.deleteById(employeeProjectEntity.getId());
+            }
+        }
+    }
+
+    private void checkProjectQualificationEntities(ProjectEntity projectEntity) {
+        for (ProjectQualificationEntity projectQualification : projectQualificationService.readAllByProjectEntity(projectEntity)) {
+            if (!projectEntity.getProjectQualifications().contains(projectQualification)) {
+                projectQualificationService.deleteById(projectQualification.getId());
+            }
+        }
+    }
 }
