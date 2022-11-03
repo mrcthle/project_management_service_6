@@ -129,7 +129,7 @@ public class ProjectService {
         }
     }
     
-    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {
+    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {//todo: Zeitfenster ausgiebiger überprüfen
         List<EmployeeProjectEntity> employeeProjectMappings = employeeProjectService.readAllByEmployeeId(employeeId);
         LocalDateTime projectStart;
         LocalDateTime projectPlannedEnd;
