@@ -73,7 +73,7 @@ public class ProjectService {
         return repository.findAll();
     }
 
-    public ProjectEntity update(ProjectEntity newEntity) {
+    public ProjectEntity update(ProjectEntity newEntity) {//todo: verify new employees (time and qualification) 
         Optional<ProjectEntity> entityToUpdate = repository.findById(newEntity.getPid());
         if (entityToUpdate.isEmpty()) {
             return repository.save(newEntity);
