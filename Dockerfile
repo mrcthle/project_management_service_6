@@ -1,4 +1,4 @@
-FROM adoptopenjdk:11-jre-openj9
+FROM adoptopenjdk:17-jre-openj9
 MAINTAINER ??? <???@schule.bremen.de>
 
 ARG JAR_FILE
