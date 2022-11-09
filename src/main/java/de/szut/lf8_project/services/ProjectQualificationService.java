@@ -17,12 +17,12 @@ public class ProjectQualificationService {
         this.repository = repository;
         employeeService = EmployeeService.getInstance();
     }
-
-    public ProjectQualificationEntity create(ProjectQualificationEntity entity) {
-        return repository.save(entity);
-    }
     
     public List<ProjectQualificationEntity> readAllByProjectEntity(ProjectEntity projectEntity) {
         return repository.findAllByProjectEntity(projectEntity);
+    }
+    
+    public void deleteById(Long id) {
+        repository.deleteById(id);
     }
 }

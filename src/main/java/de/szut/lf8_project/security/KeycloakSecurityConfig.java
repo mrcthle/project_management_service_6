@@ -28,11 +28,12 @@ class KeycloakSecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/hello").hasRole("user")
                 .antMatchers("/v1/api/pms/project").hasRole("product_owner")
-                .antMatchers("/v1/api/pms/project/{id}").hasRole("product_owner")
+                .antMatchers("/v1/api/pms/project/{id}").hasRole("product_owner")//todo: /delete/{id}
                 .antMatchers("/v1/api/pms/project/read/{id}").hasAnyRole("user", "product_owner")
                 .antMatchers("/v1/api/pms/project/read").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/project/readEmployees/{id}").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/project/update/{id}").hasRole("product_owner")
+                .antMatchers("/v1/api/pms/project/{projectId}/{employeeId}").hasRole("product_owner")
                 .antMatchers("/v1/api/pms/employee/{id}").hasRole("product_owner")
                 .anyRequest()
                 .permitAll();

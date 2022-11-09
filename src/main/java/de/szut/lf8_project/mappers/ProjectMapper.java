@@ -6,6 +6,7 @@ import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
+import de.szut.lf8_project.services.CustomerService;
 import de.szut.lf8_project.services.EmployeeService;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,11 @@ import java.util.Set;
 public class ProjectMapper {
     
     private final EmployeeService employeeService;
+    private final CustomerService customerService;
     
-    public ProjectMapper(EmployeeService employeeService) {
+    public ProjectMapper(EmployeeService employeeService, CustomerService customerService) {
         this.employeeService = employeeService;
+        this.customerService = customerService;
     }
     
     public GetProjectDTO mapToGetDto(ProjectEntity projectEntity) {
@@ -36,7 +39,7 @@ public class ProjectMapper {
         return new GetProjectDTO(
                 projectEntity.getPid(),
                 projectEntity.getDescription(),
-                projectEntity.getCustomerId(),
+                customerService.getCustomerById(projectEntity.getCustomerId()),
                 projectEntity.getComment(),
                 projectLeader,
                 projectEntity.getStartDate(),

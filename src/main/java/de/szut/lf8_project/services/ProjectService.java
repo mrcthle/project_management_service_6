@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,28 +24,23 @@ public class ProjectService {
     private final CustomerService customerService;
     private final EmployeeService employeeService;
     private final EmployeeProjectService employeeProjectService;
+    private final ProjectQualificationService projectQualificationService;
 
     public ProjectService(
             ProjectRepository repository,
             CustomerService customerService,
-            EmployeeProjectService employeeProjectService
+            EmployeeProjectService employeeProjectService,
+            ProjectQualificationService projectQualificationService
     ) {
         this.repository = repository;
         this.customerService = customerService;
         this.employeeService = EmployeeService.getInstance();
         this.employeeProjectService = employeeProjectService;
+        this.projectQualificationService = projectQualificationService;
     }
 
     public ProjectEntity create(ProjectEntity projectEntity) {
-        if ((projectEntity.getPlannedEndDate().isBefore(projectEntity.getStartDate()) ||
-                projectEntity.getEndDate().isBefore(projectEntity.getStartDate()) || 
-                projectEntity.getPlannedEndDate().isEqual(projectEntity.getStartDate()) || 
-                projectEntity.getEndDate().isEqual(projectEntity.getStartDate())) && 
-                (!projectEntity.getDescription().contains("time machine"))
-        ) {
-            throw new TimeMachineException("If your project is not a time machine, there is no way the end date is before the start date.");
-        }
-        
+        checkStartEndDates(projectEntity);
         customerService.getCustomerById(projectEntity.getCustomerId());
         employeeService.getEmployee(projectEntity.getProjectLeader());
 
@@ -54,11 +50,7 @@ public class ProjectService {
             checkEmployeeQualification(projectEntity, employeeDTO);
             checkEmployeeAvailability(projectEntity, employeeDTO.getId());
         }
-        //todo: Zeitfenster des Mitarbeiters fehlt
         projectEntity = repository.save(projectEntity);
-        for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
-            employeeProjectService.create(employeeProjectEntity);
-        }
         return projectEntity;
     }
 
@@ -75,6 +67,7 @@ public class ProjectService {
     }
 
     public ProjectEntity update(ProjectEntity newEntity) {
+        checkStartEndDates(newEntity);
         ProjectEntity entityToUpdate = readById(newEntity.getPid());
         entityToUpdate.setPid(newEntity.getPid());
         entityToUpdate.setDescription(newEntity.getDescription());
@@ -83,14 +76,34 @@ public class ProjectService {
         entityToUpdate.setStartDate(newEntity.getStartDate());
         entityToUpdate.setPlannedEndDate(newEntity.getPlannedEndDate());
         entityToUpdate.setEndDate(newEntity.getEndDate());
-        entityToUpdate.setProjectEmployees(newEntity.getProjectEmployees());
-        for (EmployeeProjectEntity employeeProjectEntity : newEntity.getProjectEmployees()) {
-            EmployeeDTO employeeDTO = employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
+        
+        for (EmployeeProjectEntity newEmployeeProjectEntity : newEntity.getProjectEmployees()) {
+            EmployeeDTO employeeDTO = employeeService.getEmployee(newEmployeeProjectEntity.getEmployeeId());
             checkEmployeeQualification(newEntity, employeeDTO);
             checkEmployeeAvailability(newEntity, employeeDTO.getId());
+            for (EmployeeProjectEntity existingEmployeeProjectEntity : entityToUpdate.getProjectEmployees()) {
+                if (Objects.equals(existingEmployeeProjectEntity.getEmployeeId(), employeeDTO.getId())) {
+                    newEmployeeProjectEntity.setId(existingEmployeeProjectEntity.getId());
+                    break;
+                }
+            }
+        }
+        entityToUpdate.setProjectEmployees(newEntity.getProjectEmployees());
+        
+        for (ProjectQualificationEntity newProjectQualificationEntity : newEntity.getProjectQualifications()) {
+            for (ProjectQualificationEntity existingProjectQualificationEntity: entityToUpdate.getProjectQualifications()) {
+                if (existingProjectQualificationEntity.getQualification().equals(newProjectQualificationEntity.getQualification())) {
+                    newProjectQualificationEntity.setId(existingProjectQualificationEntity.getId());
+                    break;
+                }
+            }
         }
         entityToUpdate.setProjectQualifications(newEntity.getProjectQualifications());
-        return repository.save(entityToUpdate);
+        entityToUpdate = repository.save(entityToUpdate);
+        
+        checkProjectQualificationEntities(newEntity);
+        checkEmployeeProjectEntities(newEntity);
+        return entityToUpdate;
     }
     
     public ProjectEntity delete(Long id) {
@@ -116,19 +129,54 @@ public class ProjectService {
         }
     }
     
-    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {
+    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {//todo: Zeitfenster ausgiebiger überprüfen
         List<EmployeeProjectEntity> employeeProjectMappings = employeeProjectService.readAllByEmployeeId(employeeId);
         LocalDateTime projectStart;
         LocalDateTime projectPlannedEnd;
         for (EmployeeProjectEntity employeeProject : employeeProjectMappings) {
+            if (Objects.equals(employeeProject.getProjectEntity().getPid(), projectEntity.getPid())) {
+                continue;
+            }
             projectStart = readById(employeeProject.getProjectEntity().getPid()).getStartDate();
             projectPlannedEnd = readById(employeeProject.getProjectEntity().getPid()).getPlannedEndDate();
-            if (
-                    projectEntity.getStartDate().isAfter(projectPlannedEnd) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
-                    projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) ||
-                    projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
+            if (projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
+                projectEntity.getPlannedEndDate().isAfter(projectStart) && projectEntity.getPlannedEndDate().isBefore(projectPlannedEnd) ||
+                projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
             ) { 
                 throw new EmployeeNotAvailableException("Employee with id = " + employeeId + " is blocked by project with id = " + projectEntity.getPid());
+            }
+        }
+    }
+    
+    private void checkStartEndDates(ProjectEntity projectEntity) {
+        if ((projectEntity.getPlannedEndDate().isBefore(projectEntity.getStartDate()) ||
+                projectEntity.getPlannedEndDate().isEqual(projectEntity.getStartDate())) &&
+                (!projectEntity.getDescription().contains("time machine"))
+        ) {
+            throw new TimeMachineException("If your project is not a time machine, there is no way the planned end date is before the start date.");
+        }
+        if (projectEntity.getEndDate() != null) {
+            if ((projectEntity.getEndDate().isBefore(projectEntity.getStartDate()) ||
+                    projectEntity.getEndDate().isEqual(projectEntity.getStartDate())) && 
+                    !projectEntity.getDescription().contains("time machine")
+            ) {
+                throw new TimeMachineException("If your project is not a time machine, there is no way the end date is before the start date.");
+            }
+        } 
+    }
+    
+    private void checkEmployeeProjectEntities(ProjectEntity projectEntity) {
+        for (EmployeeProjectEntity employeeProjectEntity : employeeProjectService.readAllByProjectEntity(projectEntity)) {
+            if (!projectEntity.getProjectEmployees().contains(employeeProjectEntity)) {
+                employeeProjectService.deleteById(employeeProjectEntity.getId());
+            }
+        }
+    }
+
+    private void checkProjectQualificationEntities(ProjectEntity projectEntity) {
+        for (ProjectQualificationEntity projectQualification : projectQualificationService.readAllByProjectEntity(projectEntity)) {
+            if (!projectEntity.getProjectQualifications().contains(projectQualification)) {
+                projectQualificationService.deleteById(projectQualification.getId());
             }
         }
     }

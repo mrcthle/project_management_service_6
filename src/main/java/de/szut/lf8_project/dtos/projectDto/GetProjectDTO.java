@@ -1,5 +1,6 @@
 package de.szut.lf8_project.dtos.projectDto;
 
+import de.szut.lf8_project.dtos.customerDto.CustomerDTO;
 import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ public class GetProjectDTO {
     
     private Long id;
     private String description;
-    private Long customerId;
+    private CustomerDTO customer;
     private String comment;
     private EmployeeDTO projectLeader;
     private LocalDateTime startDate;
