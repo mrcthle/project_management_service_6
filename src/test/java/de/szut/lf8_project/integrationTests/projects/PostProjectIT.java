@@ -16,8 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PostProjectIT extends AbstractIntegrationTest {
@@ -35,7 +37,7 @@ public class PostProjectIT extends AbstractIntegrationTest {
                 11L,
                 List.of(10L, 60L),
                 List.of("Java", "Angular")
-        ); 
+        );
         
         String validProjectContent = 
                 "{" + 
@@ -52,6 +54,17 @@ public class PostProjectIT extends AbstractIntegrationTest {
         
         final var contentAsString = this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("description", is(addProjectDTO.getDescription())))
+                .andExpect(jsonPath("customer.id", is(addProjectDTO.getCustomerId().intValue())))
+                .andExpect(jsonPath("comment", is(addProjectDTO.getComment())))
+                .andExpect(jsonPath("projectLeader.id", is(addProjectDTO.getProjectLeader().intValue())))
+                .andExpect(jsonPath("startDate", containsString(addProjectDTO.getStartDate().toString())))
+                .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
+                .andExpect(jsonPath("endDate", is(addProjectDTO.getEndDate())))
+                .andExpect(jsonPath("projectEmployees", hasSize(2)))
+                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addProjectDTO.getProjectEmployeeIds().get(0).intValue(), addProjectDTO.getProjectEmployeeIds().get(1).intValue())))
+                .andExpect(jsonPath("qualifications", hasSize(2)))
+                .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0), addProjectDTO.getQualifications().get(1))))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -112,6 +125,17 @@ public class PostProjectIT extends AbstractIntegrationTest {
 
         final var contentAsString = this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("description", is(addProjectDTO.getDescription())))
+                .andExpect(jsonPath("customer.id", is(addProjectDTO.getCustomerId().intValue())))
+                .andExpect(jsonPath("comment", is(addProjectDTO.getComment())))
+                .andExpect(jsonPath("projectLeader.id", is(addProjectDTO.getProjectLeader().intValue())))
+                .andExpect(jsonPath("startDate", containsString(addProjectDTO.getStartDate().toString())))
+                .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
+                .andExpect(jsonPath("endDate", is(addProjectDTO.getEndDate())))
+                .andExpect(jsonPath("projectEmployees", hasSize(2)))
+                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addProjectDTO.getProjectEmployeeIds().get(0).intValue(), addProjectDTO.getProjectEmployeeIds().get(1).intValue())))
+                .andExpect(jsonPath("qualifications", hasSize(2)))
+                .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0), addProjectDTO.getQualifications().get(1))))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
