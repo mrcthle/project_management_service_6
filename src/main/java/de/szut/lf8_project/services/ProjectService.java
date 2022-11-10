@@ -110,6 +110,32 @@ public class ProjectService {
     }
     
     private void checkEmployeeQualification(ProjectEntity projectEntity, EmployeeDTO employeeDTO) {
+        String skillSetWithinProject = null;
+        for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
+            skillSetWithinProject = employeeProjectEntity.getSkillWithinProject();
+            
+            if (!employeeService.getEmployee(employeeProjectEntity.getEmployeeId()).getSkillSet().contains(skillSetWithinProject)) {
+                throw new SkillSetNotFoundException("Employee with id = " + employeeDTO.getId() + " does not have the skill " + skillSetWithinProject);
+            }
+        }
+        if (skillSetWithinProject != null) {
+            boolean containsSkillSet = false;
+            for (ProjectQualificationEntity projectQualificationEntity : projectEntity.getProjectQualifications()) {
+                if (projectQualificationEntity.getQualification().equals(skillSetWithinProject)) {
+                    containsSkillSet = true;
+                    break;
+                }
+            }
+            if (!containsSkillSet) {
+                throw new SkillSetNotNeededException(
+                        "Project with id = " + projectEntity.getPid() + 
+                        " does not need Employee with id = " + employeeDTO.getId() + 
+                        " for Skill '" + skillSetWithinProject + "'."
+                );
+            }
+        }
+        
+        
         for (ProjectQualificationEntity projectQualification : projectEntity.getProjectQualifications()) {
             boolean isQualified = false;
             for (String skillSet : employeeDTO.getSkillSet()) {
