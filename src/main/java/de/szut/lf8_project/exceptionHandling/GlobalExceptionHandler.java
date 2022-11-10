@@ -2,6 +2,7 @@ package de.szut.lf8_project.exceptionHandling;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,8 +33,11 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
-        String errormessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
-        ErrorDetails errorDetails = new ErrorDetails(new Date(), errormessage, request.getDescription(false));
+        StringBuilder errormessage = new StringBuilder();
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            errormessage.append(fieldError.getDefaultMessage()).append("\n");
+        }
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), errormessage.toString(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
     
