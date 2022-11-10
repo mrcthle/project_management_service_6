@@ -20,6 +20,9 @@ public class EmployeeProjectEntity {
     @Column(name = "employee_id", nullable = false)
     private Long employeeId;
     
+    @Column(name = "skill_within_project", nullable = false)
+    private String skillWithinProject;
+    
     @ManyToOne(
             fetch = FetchType.LAZY,
             cascade = CascadeType.DETACH //Todo: Cascade Type überprüfen
