@@ -2,6 +2,7 @@ package de.szut.lf8_project.dtos.projectDto;
 
 import de.szut.lf8_project.dtos.customerDto.CustomerDTO;
 import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
+import de.szut.lf8_project.dtos.employeeDto.GetEmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,6 @@ public class GetProjectDTO {
     private LocalDateTime startDate;
     private LocalDateTime plannedEndDate;
     private LocalDateTime endDate;
-    private List<EmployeeDTO> projectEmployees;
+    private List<GetEmployeeDTO> projectEmployees;
     private List<String> qualifications;
 }
