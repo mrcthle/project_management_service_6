@@ -4,10 +4,7 @@ import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
-import de.szut.lf8_project.exceptionHandling.EmployeeNotAvailableException;
-import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
-import de.szut.lf8_project.exceptionHandling.SkillSetNotFound;
-import de.szut.lf8_project.exceptionHandling.TimeMachineException;
+import de.szut.lf8_project.exceptionHandling.*;
 import de.szut.lf8_project.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
@@ -122,7 +119,7 @@ public class ProjectService {
                 }
             }
             if (!isQualified) {
-                throw new SkillSetNotFound(
+                throw new SkillSetNotFoundException(
                         "Employee with id = " + employeeDTO.getId() + " does not have the needed skill '" + projectQualification.getQualification() + "'."
                 );
             }
