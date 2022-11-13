@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public abstract class AbstractProjectController {
+public abstract class AbstractProjectControllerAnnotations {
 
     @Operation(summary = "returns projects by its id", description = "The endpoint returns a specific project requested by its id.")
     @ApiResponses(value = {

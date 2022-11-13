@@ -24,7 +24,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("v1/api/pms/project")
-public class ProjectController extends AbstractProjectController {
+public class ProjectController extends AbstractProjectControllerAnnotations {
 
     private final EmployeeMapper employeeMapper;
     private final EmployeeService employeeService;

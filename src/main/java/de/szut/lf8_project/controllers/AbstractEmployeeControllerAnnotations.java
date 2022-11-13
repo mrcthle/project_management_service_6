@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public abstract class AbstractEmployeeController {
+public abstract class AbstractEmployeeControllerAnnotations {
 
     @Operation(summary = "returns projects by employee id", description = "The endpoint returns a list of all projects an employee is part of.")
     @ApiResponses(value = {
