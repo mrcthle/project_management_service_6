@@ -97,7 +97,7 @@ public class ProjectController {
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
     
-    @DeleteMapping("{projectId}/{employeeId}")
+    @DeleteMapping("/delete/{projectId}/{employeeId}")
     public ResponseEntity<GetProjectDTO> removeEmployeeFromProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
         ProjectEntity projectEntity = projectService.readById(projectId);
         Set<EmployeeProjectEntity> employeeProjectEntities = projectEntity.getProjectEmployees();
