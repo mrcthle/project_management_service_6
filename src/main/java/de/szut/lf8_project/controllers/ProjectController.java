@@ -90,7 +90,7 @@ public class ProjectController {
         return new ResponseEntity<>(returnProjectDTO, HttpStatus.OK);
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
         ProjectEntity projectEntity = projectService.delete(id);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
