@@ -43,12 +43,12 @@ public class UpdateProjectEntityByIdIT extends AbstractIntegrationTest {
         
         EmployeeProjectEntity employeeProjectEntity1 = new EmployeeProjectEntity();
         employeeProjectEntity1.setProjectEntity(projectEntity);
-        employeeProjectEntity1.setEmployeeId(addEmployeeOne.id());
-        employeeProjectEntity1.setSkillWithinProject(addEmployeeOne.skillWithinProject());
+        employeeProjectEntity1.setEmployeeId(addEmployeeOne.getId());
+        employeeProjectEntity1.setSkillWithinProject(addEmployeeOne.getSkillWithinProject());
         EmployeeProjectEntity employeeProjectEntity2 = new EmployeeProjectEntity();
         employeeProjectEntity2.setProjectEntity(projectEntity);
-        employeeProjectEntity2.setEmployeeId(addEmployeeTwo.id());
-        employeeProjectEntity2.setSkillWithinProject(addEmployeeTwo.skillWithinProject());
+        employeeProjectEntity2.setEmployeeId(addEmployeeTwo.getId());
+        employeeProjectEntity2.setSkillWithinProject(addEmployeeTwo.getSkillWithinProject());
 
         ProjectQualificationEntity projectQualification1 = new ProjectQualificationEntity();
         projectQualification1.setProjectEntity(projectEntity);
@@ -74,7 +74,7 @@ public class UpdateProjectEntityByIdIT extends AbstractIntegrationTest {
                 List.of("Java")
         );
         
-        String addEmployeeDTOs = "[{\"id\":" + addEmployeeOne.id() + ", \"skillWithinProject\":\"" + addEmployeeOne.skillWithinProject() + "\"}]";
+        String addEmployeeDTOs = "[{\"id\":" + addEmployeeOne.getId() + ", \"skillWithinProject\":\"" + addEmployeeOne.getSkillWithinProject() + "\"}]";
         
         String validProjectContent = "{" +
                 "\"description\": \"" + addProjectDTO.getDescription() + "\"," +
@@ -98,7 +98,7 @@ public class UpdateProjectEntityByIdIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
                 .andExpect(jsonPath("endDate", containsString(addProjectDTO.getEndDate().toString())))
                 .andExpect(jsonPath("projectEmployees", hasSize(1)))
-                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addEmployeeOne.id().intValue())))
+                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addEmployeeOne.getId().intValue())))
                 .andExpect(jsonPath("qualifications", hasSize(1)))
                 .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0))))
                 .andReturn()
@@ -127,7 +127,7 @@ public class UpdateProjectEntityByIdIT extends AbstractIntegrationTest {
         assertThat(loadedProjectEntity.get().getStartDate()).isEqualTo(addProjectDTO.getStartDate());
         assertThat(loadedProjectEntity.get().getPlannedEndDate()).isEqualTo(addProjectDTO.getPlannedEndDate());
         assertThat(loadedProjectEntity.get().getEndDate()).isEqualTo(addProjectDTO.getEndDate());
-        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(List.of(addEmployeeOne.id()));
+        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(List.of(addEmployeeOne.getId()));
         assertThat(loadedProjectQualifications).hasSameElementsAs(addProjectDTO.getQualifications());
     }
 }
