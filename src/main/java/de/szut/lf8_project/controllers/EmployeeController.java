@@ -7,6 +7,13 @@ import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.EmployeeService;
 import de.szut.lf8_project.services.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +38,37 @@ public class EmployeeController {
         this.projectMapper = projectMapper;
         this.projectService = projectService;
     }
-    
+    @Operation(summary = "returns projects by employee id", description = "The endpoint returns a list of all projects an employee is part of.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", 
+                    description = "Read all projects by employee id.",
+                    content = {@Content(
+                                mediaType = "application/json", 
+                                array = @ArraySchema(schema = @Schema(implementation = GetProjectDTO.class))
+                    )}
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "The validation of one or more fields failed.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "You are not authorized.",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "An employee with this id could not be found.",
+                    content = @Content
+            )
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<List<GetProjectDTO>> readAllProjectsByEmployeeId(@PathVariable Long id) {
+    public ResponseEntity<List<GetProjectDTO>> readAllProjectsByEmployeeId(
+            @Parameter(description = "id of employee")
+            @PathVariable Long id
+    ) {
         EmployeeDTO employee = employeeService.getEmployee(id);
         List<ProjectEntity> projectEntities = projectService.readAll();
         List<GetProjectDTO> projectDTOs = new ArrayList<>();
