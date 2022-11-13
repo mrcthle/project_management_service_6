@@ -35,12 +35,12 @@ public class DeleteEmployeeFromProjectByProjectIdIT extends AbstractIntegrationT
 
         EmployeeProjectEntity employeeProjectEntity1 = new EmployeeProjectEntity();
         employeeProjectEntity1.setProjectEntity(projectEntity);
-        employeeProjectEntity1.setEmployeeId(addEmployeeOne.id());
-        employeeProjectEntity1.setSkillWithinProject(addEmployeeOne.skillWithinProject());
+        employeeProjectEntity1.setEmployeeId(addEmployeeOne.getId());
+        employeeProjectEntity1.setSkillWithinProject(addEmployeeOne.getSkillWithinProject());
         EmployeeProjectEntity employeeProjectEntity2 = new EmployeeProjectEntity();
         employeeProjectEntity2.setProjectEntity(projectEntity);
-        employeeProjectEntity2.setEmployeeId(addEmployeeTwo.id());
-        employeeProjectEntity2.setSkillWithinProject(addEmployeeTwo.skillWithinProject());
+        employeeProjectEntity2.setEmployeeId(addEmployeeTwo.getId());
+        employeeProjectEntity2.setSkillWithinProject(addEmployeeTwo.getSkillWithinProject());
 
         ProjectQualificationEntity projectQualification1 = new ProjectQualificationEntity();
         projectQualification1.setProjectEntity(projectEntity);
