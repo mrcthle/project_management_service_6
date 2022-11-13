@@ -1,10 +1,11 @@
 package de.szut.lf8_project.controllers;
 
-import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
+import de.szut.lf8_project.dtos.employeeDto.GetEmployeeDTO;
 import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
+import de.szut.lf8_project.mappers.EmployeeMapper;
 import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.EmployeeService;
 import de.szut.lf8_project.services.ProjectService;
@@ -21,16 +22,19 @@ import java.util.Set;
 @RestController
 @RequestMapping("v1/api/pms/project")
 public class ProjectController {
-    
+
+    private final EmployeeMapper employeeMapper;
     private final EmployeeService employeeService;
     private final ProjectMapper projectMapper;
     private final ProjectService projectService;
     
     public ProjectController(
+            EmployeeMapper employeeMapper,
             EmployeeService employeeService,
             ProjectMapper projectMapper,
             ProjectService projectService
     ) {
+        this.employeeMapper = employeeMapper;
         this.employeeService = employeeService;
         this.projectMapper = projectMapper;
         this.projectService = projectService;
@@ -55,11 +59,16 @@ public class ProjectController {
     }
     
     @GetMapping("readEmployees/{id}")
-    public ResponseEntity<List<EmployeeDTO>> readAllEmployeesByProjectId(@PathVariable Long id) {
+    public ResponseEntity<List<GetEmployeeDTO>> readAllEmployeesByProjectId(@PathVariable Long id) {
         ProjectEntity projectEntity = projectService.readById(id);
-        List<EmployeeDTO> employees = new ArrayList<>();
+        List<GetEmployeeDTO> employees = new ArrayList<>();
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
-            employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
+            GetEmployeeDTO getEmployeeDTO = 
+                    employeeMapper.mapEmployeeDTOToGetEmployeeDTO(
+                            employeeService.getEmployee(employeeProjectEntity.getEmployeeId()), 
+                            projectEntity
+                    );
+            employees.add(getEmployeeDTO);
         }
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
@@ -81,14 +90,14 @@ public class ProjectController {
         return new ResponseEntity<>(returnProjectDTO, HttpStatus.OK);
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
         ProjectEntity projectEntity = projectService.delete(id);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
     
-    @DeleteMapping("{projectId}/{employeeId}")
+    @DeleteMapping("/delete/{projectId}/{employeeId}")
     public ResponseEntity<GetProjectDTO> removeEmployeeFromProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
         ProjectEntity projectEntity = projectService.readById(projectId);
         Set<EmployeeProjectEntity> employeeProjectEntities = projectEntity.getProjectEmployees();

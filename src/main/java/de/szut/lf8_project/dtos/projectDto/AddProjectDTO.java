@@ -1,5 +1,6 @@
 package de.szut.lf8_project.dtos.projectDto;
 
+import de.szut.lf8_project.dtos.employeeDto.AddEmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class AddProjectDTO {
     @NotNull(message = "The project needs a leader")
     private Long projectLeader;
     
-    private List<Long> projectEmployeeIds;
+    private List<AddEmployeeDTO> addEmployeeDTOs;
     
     @NotNull(message = "The list of qualifications must not be null")
     private List<String> qualifications;

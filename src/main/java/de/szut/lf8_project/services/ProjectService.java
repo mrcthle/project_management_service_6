@@ -4,10 +4,7 @@ import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
-import de.szut.lf8_project.exceptionHandling.EmployeeNotAvailableException;
-import de.szut.lf8_project.exceptionHandling.ResourceNotFoundException;
-import de.szut.lf8_project.exceptionHandling.SkillSetNotFound;
-import de.szut.lf8_project.exceptionHandling.TimeMachineException;
+import de.szut.lf8_project.exceptionHandling.*;
 import de.szut.lf8_project.repositories.ProjectRepository;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +70,7 @@ public class ProjectService {
         entityToUpdate.setDescription(newEntity.getDescription());
         entityToUpdate.setCustomerId(newEntity.getCustomerId());
         entityToUpdate.setComment(newEntity.getComment());
+        entityToUpdate.setProjectLeader(newEntity.getProjectLeader());
         entityToUpdate.setStartDate(newEntity.getStartDate());
         entityToUpdate.setPlannedEndDate(newEntity.getPlannedEndDate());
         entityToUpdate.setEndDate(newEntity.getEndDate());
@@ -113,6 +111,32 @@ public class ProjectService {
     }
     
     private void checkEmployeeQualification(ProjectEntity projectEntity, EmployeeDTO employeeDTO) {
+        String skillSetWithinProject = null;
+        for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
+            skillSetWithinProject = employeeProjectEntity.getSkillWithinProject();
+            
+            if (!employeeService.getEmployee(employeeProjectEntity.getEmployeeId()).getSkillSet().contains(skillSetWithinProject)) {
+                throw new SkillSetNotFoundException("Employee with id = " + employeeDTO.getId() + " does not have the skill " + skillSetWithinProject);
+            }
+        }
+        if (skillSetWithinProject != null) {
+            boolean containsSkillSet = false;
+            for (ProjectQualificationEntity projectQualificationEntity : projectEntity.getProjectQualifications()) {
+                if (projectQualificationEntity.getQualification().equals(skillSetWithinProject)) {
+                    containsSkillSet = true;
+                    break;
+                }
+            }
+            if (!containsSkillSet) {
+                throw new SkillSetNotNeededException(
+                        "Project with id = " + projectEntity.getPid() + 
+                        " does not need Employee with id = " + employeeDTO.getId() + 
+                        " for Skill '" + skillSetWithinProject + "'."
+                );
+            }
+        }
+        
+        
         for (ProjectQualificationEntity projectQualification : projectEntity.getProjectQualifications()) {
             boolean isQualified = false;
             for (String skillSet : employeeDTO.getSkillSet()) {
@@ -122,7 +146,7 @@ public class ProjectService {
                 }
             }
             if (!isQualified) {
-                throw new SkillSetNotFound(
+                throw new SkillSetNotFoundException(
                         "Employee with id = " + employeeDTO.getId() + " does not have the needed skill '" + projectQualification.getQualification() + "'."
                 );
             }

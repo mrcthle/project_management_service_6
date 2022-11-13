@@ -1,6 +1,8 @@
 package de.szut.lf8_project.mappers;
 
+import de.szut.lf8_project.dtos.employeeDto.AddEmployeeDTO;
 import de.szut.lf8_project.dtos.employeeDto.EmployeeDTO;
+import de.szut.lf8_project.dtos.employeeDto.GetEmployeeDTO;
 import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.dtos.projectDto.GetProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
@@ -18,20 +20,23 @@ import java.util.Set;
 @Service
 public class ProjectMapper {
     
+    private final EmployeeMapper employeeMapper;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
     
-    public ProjectMapper(EmployeeService employeeService, CustomerService customerService) {
+    public ProjectMapper(EmployeeMapper employeeMapper, EmployeeService employeeService, CustomerService customerService) {
+        this.employeeMapper = employeeMapper;
         this.employeeService = employeeService;
         this.customerService = customerService;
     }
     
     public GetProjectDTO mapToGetDto(ProjectEntity projectEntity) {
         EmployeeDTO projectLeader = employeeService.getEmployee(projectEntity.getProjectLeader());
-        List<EmployeeDTO> employees = new ArrayList<>();
+        List<GetEmployeeDTO> employees = new ArrayList<>();
         List<String> qualifications = new ArrayList<>();
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
-            employees.add(employeeService.getEmployee(employeeProjectEntity.getEmployeeId()));
+            EmployeeDTO employeeDTO = employeeService.getEmployee(employeeProjectEntity.getEmployeeId());
+            employees.add(employeeMapper.mapEmployeeDTOToGetEmployeeDTO(employeeDTO, projectEntity));
         }
         for (ProjectQualificationEntity projectQualification : projectEntity.getProjectQualifications()) {
             qualifications.add(projectQualification.getQualification());
@@ -60,12 +65,13 @@ public class ProjectMapper {
         projectEntity.setEndDate(addProjectDTO.getEndDate());
         projectEntity.setProjectLeader(addProjectDTO.getProjectLeader());
         Set<EmployeeProjectEntity> employeeProjectEntities = new HashSet<>();
-        if (addProjectDTO.getProjectEmployeeIds() != null) {
-            for (Long employeeId : addProjectDTO.getProjectEmployeeIds()) {
-                employeeService.getEmployee(employeeId);
+        if (addProjectDTO.getAddEmployeeDTOs() != null) {
+            for (AddEmployeeDTO addEmployeeDTO : addProjectDTO.getAddEmployeeDTOs()) {
+                employeeService.getEmployee(addEmployeeDTO.id());
                 EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
                 employeeProjectEntity.setProjectEntity(projectEntity);
-                employeeProjectEntity.setEmployeeId(employeeId);
+                employeeProjectEntity.setEmployeeId(addEmployeeDTO.id());
+                employeeProjectEntity.setSkillWithinProject(addEmployeeDTO.skillWithinProject());
                 employeeProjectEntities.add(employeeProjectEntity);
             }
         }
