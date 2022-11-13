@@ -31,9 +31,11 @@ public class ReadByIdProjectIT extends AbstractIntegrationTest {
         EmployeeProjectEntity employeeProjectEntity1 = new EmployeeProjectEntity();
         employeeProjectEntity1.setProjectEntity(projectEntity);
         employeeProjectEntity1.setEmployeeId(10L);
+        employeeProjectEntity1.setSkillWithinProject("Java");
         EmployeeProjectEntity employeeProjectEntity2 = new EmployeeProjectEntity();
         employeeProjectEntity2.setProjectEntity(projectEntity);
         employeeProjectEntity2.setEmployeeId(60L);
+        employeeProjectEntity2.setSkillWithinProject("Angular");
 
         ProjectQualificationEntity projectQualification1 = new ProjectQualificationEntity();
         projectQualification1.setProjectEntity(projectEntity);
