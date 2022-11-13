@@ -70,6 +70,7 @@ public class ProjectService {
         entityToUpdate.setDescription(newEntity.getDescription());
         entityToUpdate.setCustomerId(newEntity.getCustomerId());
         entityToUpdate.setComment(newEntity.getComment());
+        entityToUpdate.setProjectLeader(newEntity.getProjectLeader());
         entityToUpdate.setStartDate(newEntity.getStartDate());
         entityToUpdate.setPlannedEndDate(newEntity.getPlannedEndDate());
         entityToUpdate.setEndDate(newEntity.getEndDate());
