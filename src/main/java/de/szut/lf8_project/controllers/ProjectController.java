@@ -9,6 +9,9 @@ import de.szut.lf8_project.mappers.EmployeeMapper;
 import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.EmployeeService;
 import de.szut.lf8_project.services.ProjectService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +24,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("v1/api/pms/project")
-public class ProjectController {
+public class ProjectController extends AbstractProjectControllerAnnotations {
 
     private final EmployeeMapper employeeMapper;
     private final EmployeeService employeeService;
@@ -39,14 +42,19 @@ public class ProjectController {
         this.projectMapper = projectMapper;
         this.projectService = projectService;
     }
-    
+
+    @Override
     @GetMapping("/read/{id}")
-    public ResponseEntity<GetProjectDTO> readProjectById(@PathVariable Long id) {
+    public ResponseEntity<GetProjectDTO> readProjectById(
+            @Parameter(description = "id of project", required = true) 
+            @PathVariable Long id
+    ) {
         ProjectEntity projectEntity = projectService.readById(id);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
-    
+
+    @Override
     @GetMapping("/read")
     public ResponseEntity<List<GetProjectDTO>> readAllProjectEntities() {
         List<ProjectEntity> projectEntities = projectService.readAll();
@@ -55,11 +63,14 @@ public class ProjectController {
             getProjectDTOs.add(projectMapper.mapToGetDto(projectEntity));
         }
         return new ResponseEntity<>(getProjectDTOs, HttpStatus.OK);
-        //ToDo: check if we can send a message instead of displaying an empty array
     }
-    
+
+    @Override
     @GetMapping("readEmployees/{id}")
-    public ResponseEntity<List<GetEmployeeDTO>> readAllEmployeesByProjectId(@PathVariable Long id) {
+    public ResponseEntity<List<GetEmployeeDTO>> readAllEmployeesByProjectId(
+            @Parameter(description = "id of project", required = true)
+            @PathVariable Long id
+    ) {
         ProjectEntity projectEntity = projectService.readById(id);
         List<GetEmployeeDTO> employees = new ArrayList<>();
         for (EmployeeProjectEntity employeeProjectEntity : projectEntity.getProjectEmployees()) {
@@ -72,33 +83,59 @@ public class ProjectController {
         }
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
-    
+
+    @Override
     @PostMapping()
-    public ResponseEntity<GetProjectDTO> createProject(@RequestBody @Valid AddProjectDTO addProjectDTO) {
+    public ResponseEntity<GetProjectDTO> createProject(
+            @Parameter(
+                    content = @Content(
+                            mediaType = "application/json", 
+                            schema = @Schema(implementation = AddProjectDTO.class)
+                    ), 
+                    description = "The valid data used to create a project", 
+                    required = true) 
+            @RequestBody @Valid AddProjectDTO addProjectDTO
+    ) {
         ProjectEntity newProjectEntity = projectMapper.mapAddProjectDtoToEntity(addProjectDTO);
         newProjectEntity = projectService.create(newProjectEntity);
         GetProjectDTO responseDto = projectMapper.mapToGetDto(newProjectEntity);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
-    
+
+    @Override
     @PutMapping("/update/{id}")
-    public ResponseEntity<GetProjectDTO> updateProjectEntity(@PathVariable Long id, @RequestBody @Valid AddProjectDTO newAddProjectDTO) {
+    public ResponseEntity<GetProjectDTO> updateProjectEntity(
+            @Parameter(description = "id of project", required = true)
+            @PathVariable Long id, 
+            @Parameter(description = "The valid data used to update a project", required = true)
+            @RequestBody @Valid AddProjectDTO newAddProjectDTO
+    ) {
         ProjectEntity updatedProjectEntity = projectMapper.mapAddProjectDtoToEntity(newAddProjectDTO);
         updatedProjectEntity.setPid(id);
         updatedProjectEntity = projectService.update(updatedProjectEntity);
         GetProjectDTO returnProjectDTO = projectMapper.mapToGetDto(updatedProjectEntity);
         return new ResponseEntity<>(returnProjectDTO, HttpStatus.OK);
     }
-    
+
+    @Override
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<GetProjectDTO> deleteProjectById(@PathVariable Long id) {
+    public ResponseEntity<GetProjectDTO> deleteProjectById(
+            @Parameter(description = "id of project", required = true)
+            @PathVariable Long id
+    ) {
         ProjectEntity projectEntity = projectService.delete(id);
         GetProjectDTO getProjectDTO = projectMapper.mapToGetDto(projectEntity);
         return new ResponseEntity<>(getProjectDTO, HttpStatus.OK);
     }
-    
+
+    @Override
     @DeleteMapping("/delete/{projectId}/{employeeId}")
-    public ResponseEntity<GetProjectDTO> removeEmployeeFromProject(@PathVariable Long projectId, @PathVariable Long employeeId) {
+    public ResponseEntity<GetProjectDTO> removeEmployeeFromProject(
+            @Parameter(description = "id of project", required = true)
+            @PathVariable Long projectId, 
+            @Parameter(description = "id of employee", required = true)
+            @PathVariable Long employeeId
+    ) {
         ProjectEntity projectEntity = projectService.readById(projectId);
         Set<EmployeeProjectEntity> employeeProjectEntities = projectEntity.getProjectEmployees();
         for (EmployeeProjectEntity employeeProjectEntity : employeeProjectEntities) {

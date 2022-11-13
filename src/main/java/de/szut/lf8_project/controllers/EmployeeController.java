@@ -7,6 +7,7 @@ import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.mappers.ProjectMapper;
 import de.szut.lf8_project.services.EmployeeService;
 import de.szut.lf8_project.services.ProjectService;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("v1/api/pms/employee")
-public class EmployeeController {
+public class EmployeeController extends AbstractEmployeeControllerAnnotations {
     
     private final EmployeeService employeeService;
     private final ProjectMapper projectMapper;
@@ -32,8 +33,12 @@ public class EmployeeController {
         this.projectService = projectService;
     }
     
+    @Override
     @GetMapping("/{id}")
-    public ResponseEntity<List<GetProjectDTO>> readAllProjectsByEmployeeId(@PathVariable Long id) {
+    public ResponseEntity<List<GetProjectDTO>> readAllProjectsByEmployeeId(
+            @Parameter(description = "id of employee", required = true)
+            @PathVariable Long id
+    ) {
         EmployeeDTO employee = employeeService.getEmployee(id);
         List<ProjectEntity> projectEntities = projectService.readAll();
         List<GetProjectDTO> projectDTOs = new ArrayList<>();

@@ -67,11 +67,11 @@ public class ProjectMapper {
         Set<EmployeeProjectEntity> employeeProjectEntities = new HashSet<>();
         if (addProjectDTO.getAddEmployeeDTOs() != null) {
             for (AddEmployeeDTO addEmployeeDTO : addProjectDTO.getAddEmployeeDTOs()) {
-                employeeService.getEmployee(addEmployeeDTO.id());
+                employeeService.getEmployee(addEmployeeDTO.getId());
                 EmployeeProjectEntity employeeProjectEntity = new EmployeeProjectEntity();
                 employeeProjectEntity.setProjectEntity(projectEntity);
-                employeeProjectEntity.setEmployeeId(addEmployeeDTO.id());
-                employeeProjectEntity.setSkillWithinProject(addEmployeeDTO.skillWithinProject());
+                employeeProjectEntity.setEmployeeId(addEmployeeDTO.getId());
+                employeeProjectEntity.setSkillWithinProject(addEmployeeDTO.getSkillWithinProject());
                 employeeProjectEntities.add(employeeProjectEntity);
             }
         }
