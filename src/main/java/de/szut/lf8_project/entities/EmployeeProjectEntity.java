@@ -25,7 +25,7 @@ public class EmployeeProjectEntity {
     
     @ManyToOne(
             fetch = FetchType.LAZY,
-            cascade = CascadeType.DETACH //Todo: Cascade Type überprüfen
+            cascade = CascadeType.DETACH
     )
     private ProjectEntity projectEntity;
 }
