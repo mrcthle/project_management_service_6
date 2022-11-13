@@ -16,7 +16,8 @@ public class EmployeeService {
 
     private final RestTemplate restTemplate;
     private final String url = "https://employee.szut.dev/employees";
-    private final String jwtToken;
+    private String jwtToken;
+    private static boolean triedRefreshingToken = false;
 
     private static EmployeeService instance;   
     
@@ -41,20 +42,21 @@ public class EmployeeService {
                     restTemplate.exchange(url + "/" + id, HttpMethod.GET, new HttpEntity<String>(httpsHeaders), EmployeeDTO.class);
             employeeDTO  = response.getBody();
         } catch (HttpClientErrorException e) {
+            if (!triedRefreshingToken) {
+                if (e.getRawStatusCode() == 401) {
+                    jwtToken = getJwtToken();
+                    triedRefreshingToken = true;
+                    EmployeeDTO searchedDTO = getEmployee(id);
+                    triedRefreshingToken = false;
+                    return searchedDTO;
+                }
+            }
             throw new ResourceNotFoundException("Employee with id = " + id + " not found.");
         }
         return employeeDTO;
     }
     
-    public List<EmployeeDTO> getEmployees() {
-        HttpHeaders httpsHeaders = new HttpHeaders();
-        httpsHeaders.set("Authorization", "Bearer " + jwtToken);
-        ResponseEntity<EmployeeDTO[]> response =
-                restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<String>(httpsHeaders), EmployeeDTO[].class);
-        return response.getBody() == null ? null : List.of(response.getBody());
-    }
-    
-    private String getJwtToken() { //Todo: wann neuen Token abfragen (abgelaufen)
+    private String getJwtToken() { // todo: optional jwtToken als Klasse mit Feld, ob abgelaufen
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -71,8 +73,7 @@ public class EmployeeService {
         
         String response = restTemplate.postForEntity(postUrl, entity, String.class).getBody();
         assert response != null;
-        String token = getJwtTokenFromResponse(response);
-        return token;
+        return getJwtTokenFromResponse(response);
     }
     
     private String getJwtTokenFromResponse(String response) {

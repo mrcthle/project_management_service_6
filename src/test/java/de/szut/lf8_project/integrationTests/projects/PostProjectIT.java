@@ -45,8 +45,8 @@ public class PostProjectIT extends AbstractIntegrationTest {
                 List.of(addEmployeeOne, addEmployeeTwo),
                 List.of("Java", "Angular")
         );
-        addEmployeeDTOs = "[{\"id\":" + addEmployeeOne.id() + ", \"skillWithinProject\":\"" + addEmployeeOne.skillWithinProject() + "\"}," +
-                "{\"id\":" + addEmployeeTwo.id() + ",\"skillWithinProject\":\"" + addEmployeeTwo.skillWithinProject() + "\"}]";
+        addEmployeeDTOs = "[{\"id\":" + addEmployeeOne.getId() + ", \"skillWithinProject\":\"" + addEmployeeOne.getSkillWithinProject() + "\"}," +
+                "{\"id\":" + addEmployeeTwo.getId() + ",\"skillWithinProject\":\"" + addEmployeeTwo.getSkillWithinProject() + "\"}]";
     }
     
     @Test
@@ -159,7 +159,7 @@ public class PostProjectIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
                 .andExpect(jsonPath("endDate", is(addProjectDTO.getEndDate())))
                 .andExpect(jsonPath("projectEmployees", hasSize(2)))
-                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addEmployeeOne.id().intValue(), addEmployeeTwo.id().intValue())))
+                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addEmployeeOne.getId().intValue(), addEmployeeTwo.getId().intValue())))
                 .andExpect(jsonPath("qualifications", hasSize(2)))
                 .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0), addProjectDTO.getQualifications().get(1))))
                 .andReturn()
@@ -221,7 +221,7 @@ public class PostProjectIT extends AbstractIntegrationTest {
         assertThat(loadedProjectEntity.getStartDate()).isEqualTo(addProjectDTO.getStartDate());
         assertThat(loadedProjectEntity.getPlannedEndDate()).isEqualTo(addProjectDTO.getPlannedEndDate());
         assertThat(loadedProjectEntity.getEndDate()).isEqualTo(addProjectDTO.getEndDate());
-        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(List.of(addEmployeeOne.id(), addEmployeeTwo.id()));
+        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(List.of(addEmployeeOne.getId(), addEmployeeTwo.getId()));
         assertThat(loadedProjectQualifications).hasSameElementsAs(addProjectDTO.getQualifications());
     }
 }

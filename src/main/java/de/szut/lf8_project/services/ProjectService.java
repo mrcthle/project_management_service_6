@@ -153,23 +153,64 @@ public class ProjectService {
         }
     }
     
-    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {//todo: Zeitfenster ausgiebiger überprüfen
+    private void checkEmployeeAvailability(final ProjectEntity projectEntity, final Long employeeId) {
         List<EmployeeProjectEntity> employeeProjectMappings = employeeProjectService.readAllByEmployeeId(employeeId);
-        LocalDateTime projectStart;
-        LocalDateTime projectPlannedEnd;
         for (EmployeeProjectEntity employeeProject : employeeProjectMappings) {
             if (Objects.equals(employeeProject.getProjectEntity().getPid(), projectEntity.getPid())) {
                 continue;
             }
-            projectStart = readById(employeeProject.getProjectEntity().getPid()).getStartDate();
-            projectPlannedEnd = readById(employeeProject.getProjectEntity().getPid()).getPlannedEndDate();
-            if (projectEntity.getStartDate().isAfter(projectStart) && projectEntity.getStartDate().isBefore(projectPlannedEnd) || 
-                projectEntity.getPlannedEndDate().isAfter(projectStart) && projectEntity.getPlannedEndDate().isBefore(projectPlannedEnd) ||
-                projectEntity.getStartDate().isBefore(projectStart) && projectEntity.getPlannedEndDate().isAfter(projectPlannedEnd)
-            ) { 
-                throw new EmployeeNotAvailableException("Employee with id = " + employeeId + " is blocked by project with id = " + projectEntity.getPid());
+            ProjectEntity existingProject = readById(employeeProject.getProjectEntity().getPid());
+            if (
+                    dateCollides(projectEntity.getStartDate(), existingProject) ||
+                    dateCollides(projectEntity.getPlannedEndDate(), existingProject) ||
+                    dateCollides(projectEntity.getEndDate(), existingProject) ||
+                    projectSurroundsExisting(projectEntity, existingProject)
+            ) {
+                throw new EmployeeNotAvailableException("Employee with id = " + employeeId + " is blocked by project with id = " + existingProject.getPid());
             }
         }
+    }
+    
+    private boolean dateCollides(LocalDateTime newDate, ProjectEntity existingProject) {
+        if (newDate == null) {
+            return false;
+        }
+        if (
+                newDate.isAfter(existingProject.getStartDate()) && newDate.isBefore(existingProject.getPlannedEndDate()) ||
+                newDate.isEqual(existingProject.getStartDate()) ||
+                newDate.isEqual(existingProject.getPlannedEndDate())
+        ) {
+            return true;
+        }
+        if (existingProject.getEndDate() != null) {
+            if (
+                    newDate.isAfter(existingProject.getStartDate()) && newDate.isBefore(existingProject.getEndDate()) ||
+                    newDate.isEqual(existingProject.getEndDate())        
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean projectSurroundsExisting(ProjectEntity newProject, ProjectEntity existingProject) {
+        if (newProject.getStartDate().isBefore(existingProject.getStartDate()) && newProject.getPlannedEndDate().isAfter(existingProject.getPlannedEndDate())) {
+            return true;
+        }
+        if (existingProject.getEndDate() != null) {
+            if (newProject.getStartDate().isBefore(existingProject.getStartDate()) && newProject.getPlannedEndDate().isAfter(existingProject.getEndDate())) {
+                return true;
+            }
+            if (newProject.getEndDate() != null) {
+                if (
+                        newProject.getStartDate().isBefore(existingProject.getStartDate()) && newProject.getEndDate().isAfter(existingProject.getPlannedEndDate()) ||
+                        newProject.getStartDate().isBefore(existingProject.getStartDate()) && newProject.getEndDate().isAfter(existingProject.getEndDate())
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     private void checkStartEndDates(ProjectEntity projectEntity) {
