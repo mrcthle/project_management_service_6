@@ -1,11 +1,12 @@
 package de.szut.lf8_project.integrationTests.projects;
 
+import de.szut.lf8_project.dtos.employeeDto.AddEmployeeDTO;
 import de.szut.lf8_project.dtos.projectDto.AddProjectDTO;
 import de.szut.lf8_project.entities.EmployeeProjectEntity;
 import de.szut.lf8_project.entities.ProjectEntity;
 import de.szut.lf8_project.entities.ProjectQualificationEntity;
 import de.szut.lf8_project.testcontainers.AbstractIntegrationTest;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.http.MediaType;
 
 import org.json.JSONObject;
@@ -24,10 +25,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class PostProjectIT extends AbstractIntegrationTest {
     
-    @Test
-    void postValidProject() throws Exception {
-        
-        AddProjectDTO addProjectDTO = new AddProjectDTO(
+    private AddEmployeeDTO addEmployeeOne;
+    private AddEmployeeDTO addEmployeeTwo;
+    private AddProjectDTO addProjectDTO;
+    private String addEmployeeDTOs;
+    
+    @BeforeEach
+    public void init() {
+        addEmployeeOne = new AddEmployeeDTO(10L,"Java");
+        addEmployeeTwo = new AddEmployeeDTO(60L,"Angular");
+        addProjectDTO = new AddProjectDTO(
                 "Test",
                 2L,
                 "Test",
@@ -35,95 +42,114 @@ public class PostProjectIT extends AbstractIntegrationTest {
                 LocalDateTime.of(2022, 11, 30, 10, 0, 0),
                 null,
                 11L,
-                List.of(10L, 60L),
+                List.of(addEmployeeOne, addEmployeeTwo),
                 List.of("Java", "Angular")
         );
+        addEmployeeDTOs = "[{\"id\":" + addEmployeeOne.id() + ", \"skillWithinProject\":\"" + addEmployeeOne.skillWithinProject() + "\"}," +
+                "{\"id\":" + addEmployeeTwo.id() + ",\"skillWithinProject\":\"" + addEmployeeTwo.skillWithinProject() + "\"}]";
+    }
+    
+    @Test
+    void postValidProject() throws Exception {
+        String validProjectContent = convertProjectDTOToString(addProjectDTO);
         
-        String validProjectContent = 
-                "{" + 
-                         "\"description\": \"" + addProjectDTO.getDescription() + "\"," + 
-                         "\"customerId\": " + addProjectDTO.getCustomerId() + "," +
-                         "\"comment\": \"" + addProjectDTO.getComment() +  "\"," +
-                         "\"projectLeader\": " + addProjectDTO.getProjectLeader() + "," +
-                         "\"startDate\": \"" + addProjectDTO.getStartDate() + "\"," +
-                         "\"plannedEndDate\": \"" + addProjectDTO.getPlannedEndDate() + "\"," +
-                         "\"endDate\": \"\"," +
-                         "\"projectEmployeeIds\": " + addProjectDTO.getProjectEmployeeIds() + "," +
-                         "\"qualifications\": [\"" + addProjectDTO.getQualifications().get(0) + "\",\"" + addProjectDTO.getQualifications().get(1) + "\"]" +
-                "}";
-        
-        final var contentAsString = this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("description", is(addProjectDTO.getDescription())))
-                .andExpect(jsonPath("customer.id", is(addProjectDTO.getCustomerId().intValue())))
-                .andExpect(jsonPath("comment", is(addProjectDTO.getComment())))
-                .andExpect(jsonPath("projectLeader.id", is(addProjectDTO.getProjectLeader().intValue())))
-                .andExpect(jsonPath("startDate", containsString(addProjectDTO.getStartDate().toString())))
-                .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
-                .andExpect(jsonPath("endDate", is(addProjectDTO.getEndDate())))
-                .andExpect(jsonPath("projectEmployees", hasSize(2)))
-                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addProjectDTO.getProjectEmployeeIds().get(0).intValue(), addProjectDTO.getProjectEmployeeIds().get(1).intValue())))
-                .andExpect(jsonPath("qualifications", hasSize(2)))
-                .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0), addProjectDTO.getQualifications().get(1))))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        
-        final Long id = Long.parseLong(new JSONObject(contentAsString).get("id").toString());//find by Id does not work
-        
+        String contentAsString = performRequest(validProjectContent);
+        Long id = Long.parseLong(new JSONObject(contentAsString).get("id").toString());
         final Optional<ProjectEntity> loadedProjectEntity = projectRepository.findById(id);
+
         if (loadedProjectEntity.isEmpty()) {
             fail();
         }
-        List<Long> loadedProjectEntityEmployeeIds = new ArrayList<>();
-        for (EmployeeProjectEntity employeeProjectEntity : loadedProjectEntity.get().getProjectEmployees()) {
-            loadedProjectEntityEmployeeIds.add(employeeProjectEntity.getEmployeeId());
-        }
-        List<String> loadedProjectQualifications = new ArrayList<>();
-        for (ProjectQualificationEntity projectQualification : loadedProjectEntity.get().getProjectQualifications()) {
-            loadedProjectQualifications.add(projectQualification.getQualification());
-        }
-        
-        assertThat(loadedProjectEntity.get().getDescription()).isEqualTo(addProjectDTO.getDescription());
-        assertThat(loadedProjectEntity.get().getCustomerId()).isEqualTo(addProjectDTO.getCustomerId());
-        assertThat(loadedProjectEntity.get().getComment()).isEqualTo(addProjectDTO.getComment());
-        assertThat(loadedProjectEntity.get().getProjectLeader()).isEqualTo(addProjectDTO.getProjectLeader());
-        assertThat(loadedProjectEntity.get().getStartDate()).isEqualTo(addProjectDTO.getStartDate());
-        assertThat(loadedProjectEntity.get().getPlannedEndDate()).isEqualTo(addProjectDTO.getPlannedEndDate());
-        assertThat(loadedProjectEntity.get().getEndDate()).isEqualTo(addProjectDTO.getEndDate());
-        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(addProjectDTO.getProjectEmployeeIds());
-        assertThat(loadedProjectQualifications).hasSameElementsAs(addProjectDTO.getQualifications());
+        validateLoadedProjectEntity(loadedProjectEntity.get());
     }
 
     @Test
     void postTimeMachineProject() throws Exception {
+        addProjectDTO.setDescription("time machine");
+        addProjectDTO.setStartDate(LocalDateTime.of(2022, 10, 31, 10, 0, 0));
+        addProjectDTO.setPlannedEndDate(LocalDateTime.of(2022, 10, 30, 10, 0, 0));
+        
+        String validProjectContent = convertProjectDTOToString(addProjectDTO);
+        
+        String contentAsString = performRequest(validProjectContent);
+        Long id = Long.parseLong(new JSONObject(contentAsString).get("id").toString());
 
-        AddProjectDTO addProjectDTO = new AddProjectDTO(
-                "Take time machine for test run",
-                2L,
-                "Test",
-                LocalDateTime.of(2022, 10, 31, 10, 0, 0),
-                LocalDateTime.of(2022, 10, 10, 10, 0, 0),
-                null,
-                11L,
-                List.of(10L, 60L),
-                List.of("Java", "Angular")
-        );
+        final Optional<ProjectEntity> loadedProjectEntity = projectRepository.findById(id);
+        if (loadedProjectEntity.isEmpty()) {
+            fail();
+        }
+        validateLoadedProjectEntity(loadedProjectEntity.get());
+    }
+    
+    @Test
+    void postInvalidProjectDueToDescription() throws Exception {
+        addProjectDTO.setDescription("");
+        
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The description must not be blank\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
 
-        String validProjectContent =
-                "{" +
-                        "\"description\": \"" + addProjectDTO.getDescription() + "\"," +
-                        "\"customerId\": " + addProjectDTO.getCustomerId() + "," +
-                        "\"comment\": \"" + addProjectDTO.getComment() +  "\"," +
-                        "\"projectLeader\": " + addProjectDTO.getProjectLeader() + "," +
-                        "\"startDate\": \"" + addProjectDTO.getStartDate() + "\"," +
-                        "\"plannedEndDate\": \"" + addProjectDTO.getPlannedEndDate() + "\"," +
-                        "\"endDate\": \"\"," +
-                        "\"projectEmployeeIds\": " + addProjectDTO.getProjectEmployeeIds() + "," +
-                        "\"qualifications\": [\"" + addProjectDTO.getQualifications().get(0) + "\",\"" + addProjectDTO.getQualifications().get(1) + "\"]" +
-                        "}";
+    @Test
+    void postInvalidProjectDueToCustomerId() throws Exception {
+        addProjectDTO.setCustomerId(null);
 
-        final var contentAsString = this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The customer id must not be null\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
+
+    @Test
+    void postInvalidProjectDueToStartDate() throws Exception {
+        addProjectDTO.setStartDate(null);
+
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The start date must not be null\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
+
+    @Test
+    void postInvalidProjectDueToPlannedEndDate() throws Exception {
+        addProjectDTO.setPlannedEndDate(null);
+
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The planned end date must not be null\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
+
+    @Test
+    void postInvalidProjectDueToProjectLeader() throws Exception {
+        addProjectDTO.setProjectLeader(null);
+
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The project needs a leader\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
+
+    @Test
+    void postInvalidProjectDueToQualifications() throws Exception {
+        addProjectDTO.setQualifications(null);
+        addProjectDTO.setAddEmployeeDTOs(null);
+
+        String validateProjectContent = convertProjectDTOToString(addProjectDTO);
+        String contentAsString = performRequestFail(validateProjectContent);
+        if (!"The list of qualifications must not be null\n".equals(new JSONObject(contentAsString).get("message").toString())) {
+            fail();
+        }
+    }
+    
+    private String performRequest(String validProjectContent) throws Exception {
+        return this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("description", is(addProjectDTO.getDescription())))
                 .andExpect(jsonPath("customer.id", is(addProjectDTO.getCustomerId().intValue())))
@@ -133,37 +159,69 @@ public class PostProjectIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("plannedEndDate", containsString(addProjectDTO.getPlannedEndDate().toString())))
                 .andExpect(jsonPath("endDate", is(addProjectDTO.getEndDate())))
                 .andExpect(jsonPath("projectEmployees", hasSize(2)))
-                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addProjectDTO.getProjectEmployeeIds().get(0).intValue(), addProjectDTO.getProjectEmployeeIds().get(1).intValue())))
+                .andExpect(jsonPath("projectEmployees.*.id", hasItems(addEmployeeOne.id().intValue(), addEmployeeTwo.id().intValue())))
                 .andExpect(jsonPath("qualifications", hasSize(2)))
                 .andExpect(jsonPath("qualifications.*", hasItems(addProjectDTO.getQualifications().get(0), addProjectDTO.getQualifications().get(1))))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+    }
 
-        final Long id = Long.parseLong(new JSONObject(contentAsString).get("id").toString());//find by Id does not work
-
-        final Optional<ProjectEntity> loadedProjectEntity = projectRepository.findById(id);
-        if (loadedProjectEntity.isEmpty()) {
-            fail();
+    private String performRequestFail(String validProjectContent) throws Exception {
+        return this.mockMvc.perform(post("/v1/api/pms/project").content(validProjectContent).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+    
+    private String convertProjectDTOToString(AddProjectDTO addProjectDTO) {
+        String qualificationsAsString = "null";
+        if (addProjectDTO.getQualifications() != null) {
+            qualificationsAsString = "[\"" + addProjectDTO.getQualifications().get(0) + "\",\""+ addProjectDTO.getQualifications().get(1) + "\"]";
         }
+        String addEmployeeDTOsAsString = "[]";
+        if (addProjectDTO.getAddEmployeeDTOs() != null) {
+            addEmployeeDTOsAsString = addEmployeeDTOs;
+        }
+        String startDateAsString = "null";
+        if (addProjectDTO.getStartDate() != null) {
+            startDateAsString = "\"" + addProjectDTO.getStartDate() + "\"";
+        }
+        String plannedEndDateAsString = "null";
+        if (addProjectDTO.getPlannedEndDate() != null) {
+            plannedEndDateAsString = "\"" + addProjectDTO.getPlannedEndDate() + "\"";
+        }
+        return "{" +
+                "\"description\": \"" + addProjectDTO.getDescription() + "\"," +
+                "\"customerId\": " + addProjectDTO.getCustomerId() + "," +
+                "\"comment\": \"" + addProjectDTO.getComment() +  "\"," +
+                "\"projectLeader\": " + addProjectDTO.getProjectLeader() + "," +
+                "\"startDate\": " + startDateAsString + "," +
+                "\"plannedEndDate\": " + plannedEndDateAsString + "," +
+                "\"endDate\": \"\"," +
+                "\"addEmployeeDTOs\": " + addEmployeeDTOsAsString + "," +
+                "\"qualifications\": " + qualificationsAsString +
+                "}";
+    }
+    
+    private void validateLoadedProjectEntity(ProjectEntity loadedProjectEntity) {
         List<Long> loadedProjectEntityEmployeeIds = new ArrayList<>();
-        for (EmployeeProjectEntity employeeProjectEntity : loadedProjectEntity.get().getProjectEmployees()) {
+        for (EmployeeProjectEntity employeeProjectEntity : loadedProjectEntity.getProjectEmployees()) {
             loadedProjectEntityEmployeeIds.add(employeeProjectEntity.getEmployeeId());
         }
         List<String> loadedProjectQualifications = new ArrayList<>();
-        for (ProjectQualificationEntity projectQualification : loadedProjectEntity.get().getProjectQualifications()) {
+        for (ProjectQualificationEntity projectQualification : loadedProjectEntity.getProjectQualifications()) {
             loadedProjectQualifications.add(projectQualification.getQualification());
         }
-
-        assertThat(loadedProjectEntity.get().getDescription()).isEqualTo(addProjectDTO.getDescription());
-        assertThat(loadedProjectEntity.get().getCustomerId()).isEqualTo(addProjectDTO.getCustomerId());
-        assertThat(loadedProjectEntity.get().getComment()).isEqualTo(addProjectDTO.getComment());
-        assertThat(loadedProjectEntity.get().getProjectLeader()).isEqualTo(addProjectDTO.getProjectLeader());
-        assertThat(loadedProjectEntity.get().getStartDate()).isEqualTo(addProjectDTO.getStartDate());
-        assertThat(loadedProjectEntity.get().getPlannedEndDate()).isEqualTo(addProjectDTO.getPlannedEndDate());
-        assertThat(loadedProjectEntity.get().getEndDate()).isEqualTo(addProjectDTO.getEndDate());
-        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(addProjectDTO.getProjectEmployeeIds());
+        assertThat(loadedProjectEntity.getDescription()).isEqualTo(addProjectDTO.getDescription());
+        assertThat(loadedProjectEntity.getCustomerId()).isEqualTo(addProjectDTO.getCustomerId());
+        assertThat(loadedProjectEntity.getComment()).isEqualTo(addProjectDTO.getComment());
+        assertThat(loadedProjectEntity.getProjectLeader()).isEqualTo(addProjectDTO.getProjectLeader());
+        assertThat(loadedProjectEntity.getStartDate()).isEqualTo(addProjectDTO.getStartDate());
+        assertThat(loadedProjectEntity.getPlannedEndDate()).isEqualTo(addProjectDTO.getPlannedEndDate());
+        assertThat(loadedProjectEntity.getEndDate()).isEqualTo(addProjectDTO.getEndDate());
+        assertThat(loadedProjectEntityEmployeeIds).hasSameElementsAs(List.of(addEmployeeOne.id(), addEmployeeTwo.id()));
         assertThat(loadedProjectQualifications).hasSameElementsAs(addProjectDTO.getQualifications());
     }
-    //Todo: tests for negative cases?
 }
