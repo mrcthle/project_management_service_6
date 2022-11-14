@@ -35,7 +35,6 @@ public class AddProjectDTO {
     
     private List<AddEmployeeDTO> addEmployeeDTOs;
     
-    @NotNull(message = "The list of qualifications must not be null")
     private List<String> qualifications;
 }
 
