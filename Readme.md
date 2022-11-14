@@ -1,19 +1,65 @@
-# Starter für das LF08 Projekt
+# Nutzung unseres project_management_services
 
-Erstellen Sie einen Fork dieses Projektes auf Github. Wählen Sie einen Namen und passen Sie diesen auch in der pom.xml in Zeile 12, 14 und 15 an.
+Wir, das sind Caro, Oke und Mirco, freuen uns, dass Sie sich für die Nutzung unseres 
+Services entschieden haben!  
+In dem folgenden Text erklären wir Ihnen, welche Schnittstellen unser Service bietet und wie
+Sie diesen am besten benutzen können.  
+Sollten Sie lieber einen Blick auf die durch OpenAPI generierte beschreibung werfen wollen,
+nutzen Sie den Endpunkt ``http://localhost:8089/swagger``.
 
-## Requirements
-* Docker https://docs.docker.com/get-docker/
-* Docker compose (bei Windows und Mac schon in Docker enthalten) https://docs.docker.com/compose/install/
+## Vor dem Starten
+1. Bitte stellen Sie sicher, dass Docker auf Ihrem PC installiert ist und gestartet wurde.  
+2. Vor dem Starten der Anwendung sollten Sie außerdem sicherstellen, dass ein Postgres Container
+   gestartet wurde (siehe [Postgres](#Postgres)).
 
-## Endpunkt
+## Nutzung der Anwendung:
+Bitte berücksichtigen Sie, dass Sie für die Nutzung unserer Endpunkte immer mit der folgenden Basis
+beginnen müssen: ``http://localhost:8089/v1/api``  
+In unserer Anwendung haben wir zwischen normalen Mitarbeitern (``user``) und Projektleitern (``project_ownern``)
+unterschieden. Im Orderner ``requests`` finden Sie zwei Dateien, mit deren Hilfe Sie für jeweils eine der Rollen
+einen Token generieren können.
+
+### Endpunkte:
+Wir haben unsere Endpunkte in zwei Kategorien unterteilt, während alle Endpunkte, die ein Projekt als Hauptakteur
+haben, unter dem Anhängsel ``/project`` erreichbar sind, ist die Abfrage aller Projekte eines Mitarbeiters unter 
+dem Anhängsel ``/employee`` möglich. Zusammengesetzt ergeben sich also die beiden Endpunkt-Grundgerüste:
+- ``http://localhost:8089/v1/api/controller``
+- ``http://localhost:8089/v1/api/employee``  
+
+Bei POST- und PUT-Methoden sind zudem noch Request Bodys zu übergeben. In beiden Fällen muss hierbei ein Projekt in 
+JSON-Format übergeben werden. Im folgenden Beispiel sind alle Pflichtfelder mit einem Sternchen markiert:
+
 ```
-http://localhost:8089
+{
+*   "description": "Test description", 
+*   "customerId": 1,
+    "comment": "Test comment",
+*   "projectLeader": 10,
+*   "startDate": "2025-08-30T23:59:59.9",
+*   "plannedEndDate": "2025-12-01T00:00:00.0",
+    "endDate": "",
+    "addEmployeeDTOs": [{"id":10, "skillWithinProject": "Java"},{"id": 20, "skillWithinProject": "Angular"}],
+    "qualifications": ["Java","Angular"]
+}
 ```
-## Swagger
-```
-http://localhost:8089/swagger
-```
+An diese Grundgerüste werden jetzt die folgenden Endpunkte angehängt:
+
+#### Projekt-Endpunkte (``/project``)
+- Anlegen eines Projektes (POST)
+- Löschen eines Projektes (DELETE): ``/delete/{id}``
+- Auslesen aller Daten eines Projektes (GET): ``/read/{id}``
+- Aktualisieren eines Projektes (PUT): ``/update/{id}``
+- Auslesen aller Projekte (GET): ``/read``
+- Auslesen aller Mitarbeitenden eines Projektes (GET): ``/readEmployees/{id}``
+- Löschen eines Mitarbietenden aus einem Projekt (DELETE): ``/delete/{projectId}/{employeeId}``
+
+#### Mitarbeiter-Endpunkt (``/employee``)
+- Alle Projekte eines Mitarbeiters (GET): ``/{id}``
+
+## Integrations Tests
+Im Packet ``test/java/de.szut.lf8_project/integrationTests`` finden Sie zwei Packete mit Testklassen,
+die jeden der implementierten Endpunkte testen. Für die erfolgreiche Ausführung dieser ist es notwendig,
+dass Docker gestartet wurde.
 
 
 # Postgres
@@ -39,23 +85,3 @@ docker compose down
 docker volume rm local_lf8_starter_postgres_data
 docker compose up
 ```
-
-### Intellij-Ansicht für Postgres Datenbank einrichten
-```bash
-1. Lasse den Docker-Container mit der PostgreSQL-Datenbank laufen
-2. im Ordner resources die Datei application.properties öffnen und die URL der Datenbank kopieren
-3. rechts im Fenster den Reiter Database öffnen
-4. In der Database-Symbolleiste auf das Datenbanksymbol mit dem Schlüssel klicken
-5. auf das Pluszeichen klicken
-6. Datasource from URL auswählen
-7. URL der DB einfügen und PostgreSQL-Treiber auswählen, mit OK bestätigen
-8. Username lf8_starter und Passwort secret eintragen (siehe application.properties), mit Apply bestätigen
-9. im Reiter Schemas alle Häkchen entfernen und lediglich vor lf8_starter_db und public Häkchen setzen
-10. mit Apply und ok bestätigen 
-```
-# Keycloak
-
-### Keycloak Token
-1. Auf der Projektebene [GetBearerToken.http](./GetBearerToken.http) öffnen.
-2. Neben der Request auf den grünen Pfeil drücken
-3. Aus dem Reponse das access_token kopieren
