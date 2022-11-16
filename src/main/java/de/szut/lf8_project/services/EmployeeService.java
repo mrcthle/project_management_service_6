@@ -36,7 +36,7 @@ public class EmployeeService {
     }
 
     public EmployeeDTO getEmployee(final Long id) {
-        if (jwtToken == null || jwtToken.isExpired()) {
+        if (jwtToken.isExpired()) {
             refreshJwtToken();
         }
         HttpHeaders httpsHeaders = new HttpHeaders();
@@ -73,7 +73,7 @@ public class EmployeeService {
         JSONObject tokenAsJson = new JSONObject(response);
         String accessToken = tokenAsJson.get("access_token").toString();
         LocalTime localTime = LocalTime.now();
-        Long expireTime = Long.parseLong(tokenAsJson.get("expires_in").toString()) - 3550L;
+        Long expireTime = Long.parseLong(tokenAsJson.get("expires_in").toString()) - 2L; // makes up for time loss in lines before
         jwtToken = new JwtToken(accessToken, localTime, expireTime);
     }
 }
