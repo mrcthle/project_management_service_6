@@ -23,7 +23,7 @@ einen Token generieren können.
 Wir haben unsere Endpunkte in zwei Kategorien unterteilt, während alle Endpunkte, die ein Projekt als Hauptakteur
 haben, unter dem Anhängsel ``/project`` erreichbar sind, ist die Abfrage aller Projekte eines Mitarbeiters unter 
 dem Anhängsel ``/employee`` möglich. Zusammengesetzt ergeben sich also die beiden Endpunkt-Grundgerüste:
-- ``http://localhost:8089/v1/api/controller``
+- ``http://localhost:8089/v1/api/project``
 - ``http://localhost:8089/v1/api/employee``  
 
 Bei POST- und PUT-Methoden sind zudem noch Request Bodys zu übergeben. In beiden Fällen muss hierbei ein Projekt in 
@@ -57,7 +57,7 @@ An diese Grundgerüste werden jetzt die folgenden Endpunkte angehängt:
 - Alle Projekte eines Mitarbeiters (GET): ``/{id}``
 
 ## Integrations Tests
-Im Packet ``test/java/de.szut.lf8_project/integrationTests`` finden Sie zwei Packete mit Testklassen,
+Im Paket ``test/java/de.szut.lf8_project/integrationTests`` finden Sie zwei Pakete mit Testklassen,
 die jeden der implementierten Endpunkte testen. Für die erfolgreiche Ausführung dieser ist es notwendig,
 dass Docker gestartet wurde.
 
